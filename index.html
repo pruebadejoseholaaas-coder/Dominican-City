@@ -512,8 +512,16 @@ canvas{
 </div>
 
 
-<script
-    src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js">
+<script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
+<script>
+(function(){
+    if(window.THREE) return;
+    const fallback=document.createElement('script');
+    fallback.src='https://unpkg.com/three@0.161.0/build/three.min.js';
+    fallback.onload=()=>window.dispatchEvent(new Event('three-ready'));
+    fallback.onerror=()=>window.dispatchEvent(new Event('three-error'));
+    document.head.appendChild(fallback);
+})();
 </script>
 
 
@@ -606,7 +614,45 @@ function loading(percent,text){
    ESCENA
 ============================================================ */
 
+function showFatalError(message){
+    const screen=document.getElementById('loading');
+    const text=document.getElementById('loadingText');
+    const progress=document.getElementById('loadingProgress');
+
+    if(progress){
+        progress.style.width='100%';
+        progress.style.background='#ef5350';
+    }
+
+    if(text){
+        text.innerHTML='❌ No se pudo iniciar el juego.<br><small style="color:#ff8a80;display:block;margin-top:8px;max-width:420px;text-align:center">'+String(message)+'</small>';
+    }
+
+    if(screen){
+        screen.style.opacity='1';
+        screen.style.pointerEvents='auto';
+    }
+}
+
+window.addEventListener('three-error',()=>{
+    if(!window.THREE) showFatalError('No se pudo cargar Three.js. Revisa tu conexión a Internet o prueba otro navegador.');
+});
+
+window.addEventListener('three-ready',()=>{
+    if(!window.__rdWorldStarted){
+        window.__rdWorldStarted=true;
+        init();
+    }
+});
+
 function init(){
+
+    if(!window.THREE){
+        showFatalError('Three.js todavía no está disponible.');
+        return;
+    }
+
+    try{
 
     loading(
         10,
@@ -776,6 +822,11 @@ function init(){
 
 
     animate();
+
+    }catch(error){
+        console.error('RD WORLD — error al iniciar:',error);
+        showFatalError(error && error.message ? error.message : 'Error desconocido al iniciar el juego.');
+    }
 
 }
 
@@ -2948,7 +2999,25 @@ function resize(){
    START
 ============================================================ */
 
-init();
+function startGame(){
+    if(window.__rdWorldStarted) return;
+
+    if(window.THREE){
+        window.__rdWorldStarted=true;
+        init();
+        return;
+    }
+
+    loading(5,'Cargando motor 3D...');
+
+    setTimeout(()=>{
+        if(!window.THREE){
+            showFatalError('Three.js no respondió. Comprueba tu conexión a Internet.');
+        }
+    },5000);
+}
+
+startGame();
 
 </script>
 
