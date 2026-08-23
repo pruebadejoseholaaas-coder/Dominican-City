@@ -512,18 +512,48 @@ canvas{
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
 <script>
+/* Cargador robusto de Three.js para GitHub Pages */
 (function(){
-    if(window.THREE) return;
-    const fallback=document.createElement('script');
-    fallback.src='https://unpkg.com/three@0.161.0/build/three.min.js';
-    fallback.onload=()=>window.dispatchEvent(new Event('three-ready'));
-    fallback.onerror=()=>window.dispatchEvent(new Event('three-error'));
-    document.head.appendChild(fallback);
+    const sources = [
+        'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js',
+        'https://unpkg.com/three@0.161.0/build/three.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/three.js/r161/three.min.js'
+    ];
+
+    let index = 0;
+
+    function loadNext(){
+        if(window.THREE){
+            if(typeof window.startGame === 'function') window.startGame();
+            return;
+        }
+
+        if(index >= sources.length){
+            window.dispatchEvent(new Event('three-error'));
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = sources[index++];
+        script.async = false;
+        script.onload = function(){
+            if(window.THREE){
+                window.dispatchEvent(new Event('three-ready'));
+            }else{
+                loadNext();
+            }
+        };
+        script.onerror = function(){
+            loadNext();
+        };
+        document.head.appendChild(script);
+    }
+
+    window.__rdLoadThree = loadNext;
+    loadNext();
 })();
 </script>
-
 
 <script>
 
@@ -3009,13 +3039,21 @@ function startGame(){
     }
 
     loading(5,'Cargando motor 3D...');
-
-    setTimeout(()=>{
-        if(!window.THREE){
-            showFatalError('Three.js no respondió. Comprueba tu conexión a Internet.');
-        }
-    },5000);
 }
+
+// Espera a que el cargador de Three.js termine.
+window.addEventListener('three-ready', function(){
+    if(!window.__rdWorldStarted && window.THREE){
+        window.__rdWorldStarted=true;
+        init();
+    }
+});
+
+window.addEventListener('three-error', function(){
+    if(!window.THREE){
+        showFatalError('No se pudo cargar el motor 3D. Los servidores externos de Three.js no respondieron.');
+    }
+});
 
 startGame();
 
