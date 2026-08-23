@@ -1,0 +1,2678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#17351f">
+
+<title>RD 1978 — La Vida Dominicana</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#111;
+    color:#fff;
+}
+
+body{
+    touch-action:none;
+}
+
+#game{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    background:#78a95c;
+}
+
+canvas{
+    display:block;
+    width:100%;
+    height:100%;
+}
+
+/* =========================
+   HUD
+========================= */
+
+#hud{
+    position:absolute;
+    top:14px;
+    left:14px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    z-index:5;
+    pointer-events:none;
+}
+
+.panel{
+    background:rgba(10,20,13,.88);
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:10px;
+    padding:8px 12px;
+    box-shadow:0 5px 20px #0004;
+    font-size:14px;
+}
+
+#job{
+    color:#ffd76a;
+}
+
+/* =========================
+   AYUDA
+========================= */
+
+#help{
+    position:absolute;
+    right:14px;
+    top:14px;
+    background:#07100ae6;
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:12px;
+    line-height:1.55;
+    z-index:5;
+}
+
+/* =========================
+   MENSAJES
+========================= */
+
+#message{
+    position:absolute;
+    left:50%;
+    bottom:110px;
+    transform:translateX(-50%);
+    background:rgba(8,12,9,.92);
+    border:1px solid #ffffff20;
+    border-radius:10px;
+    padding:11px 16px;
+    max-width:min(600px,90vw);
+    text-align:center;
+    opacity:0;
+    transition:.2s;
+    z-index:8;
+    pointer-events:none;
+}
+
+#message.show{
+    opacity:1;
+}
+
+/* =========================
+   MINIMAPA
+========================= */
+
+#mini{
+    position:absolute;
+    right:14px;
+    bottom:14px;
+    width:150px;
+    height:150px;
+    background:#17351fcc;
+    border:1px solid #ffffff22;
+    border-radius:12px;
+    z-index:5;
+}
+
+/* =========================
+   CONTROLES MOVIL
+========================= */
+
+#controls{
+    display:none;
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:16px;
+    z-index:10;
+    pointer-events:none;
+}
+
+.pad{
+    position:absolute;
+    left:16px;
+    bottom:0;
+    width:150px;
+    height:150px;
+    pointer-events:auto;
+}
+
+.key{
+    position:absolute;
+    width:48px;
+    height:48px;
+    border:1px solid #ffffff44;
+    background:#101b13dd;
+    color:#fff;
+    border-radius:12px;
+    font-weight:bold;
+}
+
+.up{
+    left:51px;
+    top:0;
+}
+
+.left{
+    left:0;
+    top:51px;
+}
+
+.down{
+    left:51px;
+    top:102px;
+}
+
+.right{
+    left:102px;
+    top:51px;
+}
+
+#action{
+    position:absolute;
+    right:24px;
+    bottom:45px;
+    width:78px;
+    height:78px;
+    border-radius:50%;
+    border:2px solid #ffffff55;
+    background:#c79a39e8;
+    color:#111;
+    font-weight:900;
+    pointer-events:auto;
+}
+
+/* =========================
+   INTRO
+========================= */
+
+#intro{
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(#07140ccc,#07140ce8),
+        radial-gradient(circle at center,#527c46,#07140c);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:20;
+    padding:20px;
+}
+
+.card{
+    width:min(650px,94vw);
+    background:#101a12f5;
+    border:1px solid #ffffff1c;
+    border-radius:18px;
+    padding:28px;
+    box-shadow:0 25px 80px #0008;
+}
+
+.card h1{
+    font-size:clamp(30px,6vw,58px);
+    margin-bottom:8px;
+    letter-spacing:-2px;
+}
+
+.card h1 span{
+    color:#f0c64b;
+}
+
+.card p{
+    color:#ccd7cc;
+    line-height:1.6;
+    margin:10px 0;
+}
+
+.card ul{
+    margin:16px 0 22px 20px;
+    color:#dfe8df;
+    line-height:1.8;
+}
+
+.start{
+    border:0;
+    background:#f0c64b;
+    color:#111;
+    font-weight:900;
+    padding:13px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.small{
+    font-size:12px;
+    color:#8e9c90;
+    margin-top:12px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:800px){
+
+    #help{
+        display:none;
+    }
+
+    #controls{
+        display:block;
+    }
+
+    #mini{
+        width:120px;
+        height:120px;
+        bottom:18px;
+        right:12px;
+    }
+
+    #message{
+        bottom:180px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <canvas id="canvas"></canvas>
+
+    <!-- HUD -->
+
+    <div id="hud">
+
+        <div class="panel">
+            💰 RD$ <b id="money">250</b>
+        </div>
+
+        <div class="panel">
+            👤 <b id="name">Juan</b>
+        </div>
+
+        <div class="panel" id="job">
+            💼 Desempleado
+        </div>
+
+    </div>
+
+    <!-- AYUDA -->
+
+    <div id="help">
+
+        <b>🇩🇴 RD 1978</b>
+        <br>
+
+        WASD / Flechas: mover
+        <br>
+
+        E: interactuar
+        <br>
+
+        M: guardar partida
+        <br>
+
+        R: volver al centro
+
+    </div>
+
+    <!-- MINIMAPA -->
+
+    <canvas id="mini"></canvas>
+
+    <!-- MENSAJE -->
+
+    <div id="message"></div>
+
+    <!-- CONTROLES MÓVILES -->
+
+    <div id="controls">
+
+        <div class="pad">
+
+            <button
+                class="key up"
+                data-key="ArrowUp">
+                ▲
+            </button>
+
+            <button
+                class="key left"
+                data-key="ArrowLeft">
+                ◀
+            </button>
+
+            <button
+                class="key down"
+                data-key="ArrowDown">
+                ▼
+            </button>
+
+            <button
+                class="key right"
+                data-key="ArrowRight">
+                ▶
+            </button>
+
+        </div>
+
+        <button id="action">
+            E<br>
+            INTERACTUAR
+        </button>
+
+    </div>
+
+    <!-- INTRO -->
+
+    <div id="intro">
+
+        <div class="card">
+
+            <h1>
+                🇩🇴 RD
+                <span>1978</span>
+            </h1>
+
+            <p>
+                Una primera demostración jugable de un
+                mundo abierto dominicano inspirado en
+                la vida cotidiana de finales de los años 70.
+            </p>
+
+            <ul>
+
+                <li>
+                    🚶 Explora una pequeña ciudad.
+                </li>
+
+                <li>
+                    🏪 Visita el colmado,
+                    barbería, estación y plaza.
+                </li>
+
+                <li>
+                    💼 Consigue trabajos
+                    y gana dinero.
+                </li>
+
+                <li>
+                    👥 Habla con personajes
+                    del barrio.
+                </li>
+
+                <li>
+                    💾 Tu progreso se guarda
+                    en el navegador.
+                </li>
+
+            </ul>
+
+            <button
+                class="start"
+                id="start">
+
+                ENTRAR A LA CIUDAD
+
+            </button>
+
+            <div class="small">
+
+                Prototipo gratuito hecho con
+                HTML, CSS y JavaScript.
+                No requiere librerías externas.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+'use strict';
+
+
+/* =========================================================
+   CONFIGURACIÓN DEL JUEGO
+========================================================= */
+
+const canvas =
+    document.getElementById('canvas');
+
+const ctx =
+    canvas.getContext('2d');
+
+const mini =
+    document.getElementById('mini');
+
+const mctx =
+    mini.getContext('2d');
+
+
+let W = innerWidth;
+let H = innerHeight;
+
+let dpr =
+    Math.min(
+        devicePixelRatio || 1,
+        2
+    );
+
+
+function resize(){
+
+    W = innerWidth;
+    H = innerHeight;
+
+    dpr =
+        Math.min(
+            devicePixelRatio || 1,
+            2
+        );
+
+    canvas.width =
+        W * dpr;
+
+    canvas.height =
+        H * dpr;
+
+    canvas.style.width =
+        W + 'px';
+
+    canvas.style.height =
+        H + 'px';
+
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+    mini.width =
+        mini.clientWidth * dpr;
+
+    mini.height =
+        mini.clientHeight * dpr;
+
+    mctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+}
+
+
+addEventListener(
+    'resize',
+    resize
+);
+
+resize();
+
+
+/* =========================================================
+   MUNDO
+========================================================= */
+
+const world = {
+
+    w:3600,
+    h:2600
+
+};
+
+
+/* =========================================================
+   JUGADOR
+========================================================= */
+
+const player = {
+
+    x:1800,
+    y:1330,
+
+    r:16,
+
+    speed:3.1,
+
+    money:250,
+
+    name:'Juan',
+
+    job:'Desempleado'
+
+};
+
+
+/* =========================================================
+   EDIFICIOS
+========================================================= */
+
+const buildings = [
+
+    {
+        x:300,
+        y:250,
+        w:500,
+        h:330,
+        name:'Colmado Don Cheo',
+        type:'shop',
+        color:'#b87333'
+    },
+
+    {
+        x:1040,
+        y:170,
+        w:560,
+        h:410,
+        name:'Barbería El Barrio',
+        type:'barber',
+        color:'#d9b44a'
+    },
+
+    {
+        x:1840,
+        y:220,
+        w:620,
+        h:360,
+        name:'Comité / Ayuntamiento',
+        type:'town',
+        color:'#c9c0a2'
+    },
+
+    {
+        x:2700,
+        y:250,
+        w:520,
+        h:420,
+        name:'Estación de Policía',
+        type:'police',
+        color:'#657c91'
+    },
+
+    {
+        x:400,
+        y:1830,
+        w:580,
+        h:390,
+        name:'Taller Mecánico',
+        type:'mechanic',
+        color:'#8b5a3c'
+    },
+
+    {
+        x:1260,
+        y:1870,
+        w:600,
+        h:360,
+        name:'Club La Esquina',
+        type:'club',
+        color:'#9d4b50'
+    },
+
+    {
+        x:2140,
+        y:1820,
+        w:620,
+        h:430,
+        name:'Mercado',
+        type:'market',
+        color:'#8b9b55'
+    },
+
+    {
+        x:3000,
+        y:1770,
+        w:400,
+        h:470,
+        name:'Casa',
+        type:'house',
+        color:'#b7a07b'
+    }
+
+];
+
+
+/* =========================================================
+   NPCS
+========================================================= */
+
+const npcs = [
+
+    {
+        x:920,
+        y:850,
+        name:'Ramón',
+        job:'Mecánico',
+        color:'#5d7b49'
+    },
+
+    {
+        x:1700,
+        y:870,
+        name:'Carmen',
+        job:'Vendedora',
+        color:'#a85b64'
+    },
+
+    {
+        x:2400,
+        y:900,
+        name:'Pedro',
+        job:'Músico',
+        color:'#536c9c'
+    },
+
+    {
+        x:3000,
+        y:1000,
+        name:'Luis',
+        job:'Policía',
+        color:'#4d6174'
+    },
+
+    {
+        x:800,
+        y:1500,
+        name:'Marta',
+        job:'Costurera',
+        color:'#9b7a52'
+    },
+
+    {
+        x:2600,
+        y:1500,
+        name:'José',
+        job:'Bachatero',
+        color:'#79538c'
+    },
+
+    {
+        x:1550,
+        y:1500,
+        name:'Ana',
+        job:'Estudiante',
+        color:'#59806c'
+    }
+
+];
+
+
+/* =========================================================
+   CARRETERAS
+========================================================= */
+
+const roads = [
+
+    {
+        x:0,
+        y:720,
+        w:3600,
+        h:190
+    },
+
+    {
+        x:0,
+        y:1430,
+        w:3600,
+        h:190
+    },
+
+    {
+        x:850,
+        y:0,
+        w:190,
+        h:2600
+    },
+
+    {
+        x:1740,
+        y:0,
+        w:190,
+        h:2600
+    },
+
+    {
+        x:2640,
+        y:0,
+        w:190,
+        h:2600
+    }
+
+];
+
+
+/* =========================================================
+   TRABAJOS
+========================================================= */
+
+const jobs = [
+
+    {
+        name:'Trabajar de vendedor',
+        pay:35,
+        desc:
+            'Ayudaste durante un rato en el mercado.'
+    },
+
+    {
+        name:'Ayudar al mecánico',
+        pay:50,
+        desc:
+            'Reparaste algunas cosas en el taller.'
+    },
+
+    {
+        name:'Tocar música',
+        pay:45,
+        desc:
+            'Tocaste una canción en el club.'
+    },
+
+    {
+        name:'Ayudar en la barbería',
+        pay:40,
+        desc:
+            'Ayudaste a organizar la barbería.'
+    }
+
+];
+
+
+let keys = {};
+
+let last = 0;
+
+let started = false;
+
+let messageTimer;
+
+
+/* =========================================================
+   UTILIDADES
+========================================================= */
+
+function clamp(
+    value,
+    min,
+    max
+){
+
+    return Math.max(
+        min,
+        Math.min(
+            max,
+            value
+        )
+    );
+
+}
+
+
+function distance(
+    x1,
+    y1,
+    x2,
+    y2
+){
+
+    return Math.hypot(
+        x1-x2,
+        y1-y2
+    );
+
+}
+
+
+/* =========================================================
+   MENSAJES
+========================================================= */
+
+function say(
+    text,
+    duration=2800
+){
+
+    const element =
+        document.getElementById(
+            'message'
+        );
+
+    element.textContent =
+        text;
+
+    element.classList.add(
+        'show'
+    );
+
+    clearTimeout(
+        messageTimer
+    );
+
+    messageTimer =
+        setTimeout(
+            () => {
+
+                element.classList.remove(
+                    'show'
+                );
+
+            },
+            duration
+        );
+
+}
+
+
+/* =========================================================
+   GUARDAR
+========================================================= */
+
+function save(){
+
+    localStorage.setItem(
+
+        'rd1978_save',
+
+        JSON.stringify({
+
+            x:player.x,
+
+            y:player.y,
+
+            money:player.money,
+
+            job:player.job,
+
+            name:player.name
+
+        })
+
+    );
+
+    say(
+        '💾 Partida guardada.'
+    );
+
+}
+
+
+/* =========================================================
+   CARGAR
+========================================================= */
+
+function load(){
+
+    try{
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem(
+                    'rd1978_save'
+                )
+            );
+
+        if(!saved)
+            return;
+
+        player.x =
+            saved.x || player.x;
+
+        player.y =
+            saved.y || player.y;
+
+        player.money =
+            Number.isFinite(
+                saved.money
+            )
+            ? saved.money
+            : player.money;
+
+        player.job =
+            saved.job ||
+            player.job;
+
+        player.name =
+            saved.name ||
+            player.name;
+
+    }catch(error){
+
+        console.log(
+            'No había partida guardada.'
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   POSICIÓN INICIAL
+========================================================= */
+
+function resetPosition(){
+
+    player.x =
+        1800;
+
+    player.y =
+        1330;
+
+    say(
+        '↩️ Regresaste al centro del barrio.'
+    );
+
+}
+
+
+/* =========================================================
+   CARRETERAS
+========================================================= */
+
+function isRoad(
+    x,
+    y
+){
+
+    return roads.some(
+        road =>
+
+            x > road.x - 20 &&
+            x < road.x + road.w + 20 &&
+            y > road.y - 20 &&
+            y < road.y + road.h + 20
+
+    );
+
+}
+
+
+/* =========================================================
+   COLISIONES
+========================================================= */
+
+function blocked(
+    x,
+    y
+){
+
+    if(
+        x < 20 ||
+        y < 20 ||
+        x > world.w - 20 ||
+        y > world.h - 20
+    ){
+
+        return true;
+
+    }
+
+
+    for(
+        const building
+        of buildings
+    ){
+
+        if(
+
+            x >
+                building.x - 20 &&
+
+            x <
+                building.x +
+                building.w +
+                20 &&
+
+            y >
+                building.y - 20 &&
+
+            y <
+                building.y +
+                building.h +
+                20
+
+        ){
+
+            return true;
+
+        }
+
+    }
+
+
+    return false;
+
+}
+
+
+/* =========================================================
+   DIBUJAR MUNDO
+========================================================= */
+
+function drawWorld(){
+
+    ctx.fillStyle =
+        '#79a95d';
+
+    ctx.fillRect(
+        0,
+        0,
+        world.w,
+        world.h
+    );
+
+
+    /* terrenos */
+
+    ctx.fillStyle =
+        '#6d9c52';
+
+
+    for(
+        let x=80;
+        x<world.w;
+        x+=420
+    ){
+
+        for(
+            let y=80;
+            y<world.h;
+            y+=390
+        ){
+
+            ctx.fillRect(
+                x,
+                y,
+                150,
+                90
+            );
+
+        }
+
+    }
+
+
+    /* carreteras */
+
+    for(
+        const road
+        of roads
+    ){
+
+        ctx.fillStyle =
+            '#77736b';
+
+        ctx.fillRect(
+            road.x,
+            road.y,
+            road.w,
+            road.h
+        );
+
+
+        ctx.strokeStyle =
+            '#d7bd69';
+
+        ctx.lineWidth =
+            4;
+
+
+        ctx.setLineDash([
+            35,
+            28
+        ]);
+
+
+        if(
+            road.w >
+            road.h
+        ){
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                road.x,
+                road.y +
+                road.h/2
+            );
+
+            ctx.lineTo(
+                road.x +
+                road.w,
+                road.y +
+                road.h/2
+            );
+
+            ctx.stroke();
+
+        }else{
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                road.x +
+                road.w/2,
+                road.y
+            );
+
+            ctx.lineTo(
+                road.x +
+                road.w/2,
+                road.y +
+                road.h
+            );
+
+            ctx.stroke();
+
+        }
+
+
+        ctx.setLineDash([]);
+
+    }
+
+
+    /* aceras */
+
+    for(
+        const road
+        of roads
+    ){
+
+        ctx.fillStyle =
+            '#aaa69c';
+
+
+        if(
+            road.w >
+            road.h
+        ){
+
+            ctx.fillRect(
+                road.x,
+                road.y-10,
+                road.w,
+                10
+            );
+
+            ctx.fillRect(
+                road.x,
+                road.y+
+                road.h,
+                road.w,
+                10
+            );
+
+        }else{
+
+            ctx.fillRect(
+                road.x-10,
+                road.y,
+                10,
+                road.h
+            );
+
+            ctx.fillRect(
+                road.x+
+                road.w,
+                road.y,
+                10,
+                road.h
+            );
+
+        }
+
+    }
+
+
+    /* edificios */
+
+    for(
+        const building
+        of buildings
+    ){
+
+        /* sombra */
+
+        ctx.fillStyle =
+            '#0003';
+
+        ctx.fillRect(
+
+            building.x+12,
+            building.y+14,
+            building.w,
+            building.h
+
+        );
+
+
+        /* edificio */
+
+        ctx.fillStyle =
+            building.color;
+
+        ctx.fillRect(
+
+            building.x,
+            building.y,
+            building.w,
+            building.h
+
+        );
+
+
+        /* techo */
+
+        ctx.fillStyle =
+            '#6b4630';
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            building.x-15,
+            building.y
+        );
+
+        ctx.lineTo(
+            building.x+
+            building.w/2,
+            building.y-70
+        );
+
+        ctx.lineTo(
+            building.x+
+            building.w+15,
+            building.y
+        );
+
+        ctx.closePath();
+
+        ctx.fill();
+
+
+        /* ventanas */
+
+        const columns =
+            Math.max(
+                2,
+                Math.floor(
+                    building.w/100
+                )
+            );
+
+
+        for(
+            let i=0;
+            i<columns;
+            i++
+        ){
+
+            ctx.fillStyle =
+                '#7bb3bd';
+
+            ctx.fillRect(
+
+                building.x+25+
+                i*
+                (
+                    (building.w-50)/
+                    columns
+                ),
+
+                building.y+65,
+
+                38,
+
+                42
+
+            );
+
+        }
+
+
+        /* puerta */
+
+        ctx.fillStyle =
+            '#3d2a20';
+
+        ctx.fillRect(
+
+            building.x+
+            building.w/2-22,
+
+            building.y+
+            building.h-65,
+
+            44,
+
+            65
+
+        );
+
+
+        /* nombre */
+
+        ctx.fillStyle =
+            '#fff';
+
+        ctx.font =
+            'bold 17px Arial';
+
+        ctx.textAlign =
+            'center';
+
+        ctx.fillText(
+
+            building.name,
+
+            building.x+
+            building.w/2,
+
+            building.y+
+            building.h+25
+
+        );
+
+    }
+
+
+    /* palmas */
+
+    for(
+        let i=0;
+        i<34;
+        i++
+    ){
+
+        const x =
+            120 +
+            (i*311)%3300;
+
+        const y =
+            100 +
+            (i*487)%2350;
+
+
+        if(
+            isRoad(x,y)
+            ||
+            buildings.some(
+                building =>
+
+                    x >
+                    building.x-30 &&
+
+                    x <
+                    building.x+
+                    building.w+30 &&
+
+                    y >
+                    building.y-30 &&
+
+                    y <
+                    building.y+
+                    building.h+30
+
+            )
+        ){
+
+            continue;
+
+        }
+
+
+        ctx.strokeStyle =
+            '#60452b';
+
+        ctx.lineWidth =
+            7;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x,
+            y+35
+        );
+
+        ctx.lineTo(
+            x+4,
+            y-4
+        );
+
+        ctx.stroke();
+
+
+        ctx.fillStyle =
+            '#2f6d3b';
+
+
+        for(
+            let a=0;
+            a<6;
+            a++
+        ){
+
+            ctx.beginPath();
+
+            ctx.ellipse(
+
+                x+
+                Math.cos(a)*25,
+
+                y-8+
+                Math.sin(a)*14,
+
+                27,
+                9,
+
+                a,
+                0,
+                Math.PI*2
+
+            );
+
+            ctx.fill();
+
+        }
+
+    }
+
+
+    /* puestos del mercado */
+
+    ctx.font =
+        'bold 14px Arial';
+
+    ctx.textAlign =
+        'center';
+
+
+    for(
+        let i=0;
+        i<5;
+        i++
+    ){
+
+        const x =
+            2200+
+            i*105;
+
+        const y =
+            1690;
+
+
+        ctx.fillStyle =
+            [
+                '#c94f3d',
+                '#e0b447',
+                '#4f8d5a'
+            ][i%3];
+
+
+        ctx.fillRect(
+            x,
+            y,
+            80,
+            55
+        );
+
+
+        ctx.fillStyle =
+            '#fff';
+
+        ctx.fillText(
+            'Puesto',
+            x+40,
+            y+32
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   NPC
+========================================================= */
+
+function drawNPC(
+    npc
+){
+
+    /* sombra */
+
+    ctx.fillStyle =
+        '#0004';
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        npc.x,
+        npc.y+17,
+        17,
+        7,
+        0,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* cuerpo */
+
+    ctx.fillStyle =
+        npc.color;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        npc.x,
+        npc.y,
+        13,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* cabeza */
+
+    ctx.fillStyle =
+        '#e0b08b';
+
+    ctx.beginPath();
+
+    ctx.arc(
+        npc.x,
+        npc.y-15,
+        9,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* cabello */
+
+    ctx.fillStyle =
+        '#222';
+
+    ctx.fillRect(
+        npc.x-9,
+        npc.y-23,
+        18,
+        5
+    );
+
+
+    /* nombre */
+
+    ctx.fillStyle =
+        '#fff';
+
+    ctx.font =
+        '12px Arial';
+
+    ctx.textAlign =
+        'center';
+
+    ctx.fillText(
+        npc.name,
+        npc.x,
+        npc.y+34
+    );
+
+}
+
+
+/* =========================================================
+   JUGADOR
+========================================================= */
+
+function drawPlayer(){
+
+    /* sombra */
+
+    ctx.fillStyle =
+        '#0005';
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        player.x,
+        player.y+18,
+        19,
+        8,
+        0,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* cuerpo */
+
+    ctx.fillStyle =
+        '#173e67';
+
+    ctx.fillRect(
+        player.x-12,
+        player.y-2,
+        24,
+        22
+    );
+
+
+    /* cara */
+
+    ctx.fillStyle =
+        '#d5a27e';
+
+    ctx.beginPath();
+
+    ctx.arc(
+        player.x,
+        player.y-13,
+        11,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* cabello */
+
+    ctx.fillStyle =
+        '#211b16';
+
+    ctx.beginPath();
+
+    ctx.arc(
+        player.x,
+        player.y-18,
+        11,
+        Math.PI,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+
+    /* nombre */
+
+    ctx.fillStyle =
+        '#fff';
+
+    ctx.font =
+        'bold 12px Arial';
+
+    ctx.textAlign =
+        'center';
+
+    ctx.fillText(
+        player.name,
+        player.x,
+        player.y+39
+    );
+
+}
+
+
+/* =========================================================
+   INTERACCIÓN CERCANA
+========================================================= */
+
+function nearestInteraction(){
+
+    let best =
+        null;
+
+    let bestDistance =
+        999;
+
+
+    for(
+        const building
+        of buildings
+    ){
+
+        const centerX =
+            building.x+
+            building.w/2;
+
+        const centerY =
+            building.y+
+            building.h/2;
+
+
+        const d =
+            distance(
+                player.x,
+                player.y,
+                centerX,
+                centerY
+            );
+
+
+        if(
+            d <
+            bestDistance
+        ){
+
+            bestDistance =
+                d;
+
+            best = {
+
+                type:'building',
+
+                obj:building,
+
+                d:d
+
+            };
+
+        }
+
+    }
+
+
+    for(
+        const npc
+        of npcs
+    ){
+
+        const d =
+            distance(
+                player.x,
+                player.y,
+                npc.x,
+                npc.y
+            );
+
+
+        if(
+            d <
+            bestDistance
+        ){
+
+            bestDistance =
+                d;
+
+            best = {
+
+                type:'npc',
+
+                obj:npc,
+
+                d:d
+
+            };
+
+        }
+
+    }
+
+
+    return bestDistance < 180
+        ? best
+        : null;
+
+}
+
+
+/* =========================================================
+   INTERACTUAR
+========================================================= */
+
+function interact(){
+
+    const hit =
+        nearestInteraction();
+
+
+    if(!hit){
+
+        say(
+            'No hay nadie ni nada cerca con quien interactuar.'
+        );
+
+        return;
+
+    }
+
+
+    /* NPC */
+
+    if(
+        hit.type ===
+        'npc'
+    ){
+
+        const npc =
+            hit.obj;
+
+
+        const lines = {
+
+            'Mecánico':
+                '¡Buenas! Si quieres trabajo, el taller siempre necesita una mano.',
+
+            'Vendedora':
+                'Aquí todo el mundo se conoce. Pasa por el mercado cuando quieras.',
+
+            'Músico':
+                'En el club siempre hace falta alguien que tenga ritmo.',
+
+            'Policía':
+                'Mantén los ojos abiertos y respeta a la gente del barrio.',
+
+            'Costurera':
+                'Estoy preparando ropa para las fiestas del barrio.',
+
+            'Bachatero':
+                'La guitarra y la esquina tienen muchas historias que contar.',
+
+            'Estudiante':
+                'Estoy estudiando para tener un buen futuro.'
+
+        };
+
+
+        say(
+            `🗣️ ${npc.name}: ${
+                lines[npc.job]
+                ||
+                '¡Qué bueno verte por aquí!'
+            }`
+        );
+
+
+        return;
+
+    }
+
+
+    /* EDIFICIOS */
+
+    const building =
+        hit.obj;
+
+
+    const jobMap = {
+
+        shop:jobs[0],
+
+        mechanic:jobs[1],
+
+        club:jobs[2],
+
+        barber:jobs[3]
+
+    };
+
+
+    if(
+        jobMap[building.type]
+    ){
+
+        const job =
+            jobMap[
+                building.type
+            ];
+
+
+        player.money +=
+            job.pay;
+
+
+        player.job =
+            job.name.replace(
+                'Trabajar de ',
+                ''
+            );
+
+
+        say(
+            `💼 ${job.name}: +RD$${job.pay}. ${job.desc}`
+        );
+
+    }
+
+    else if(
+        building.type ===
+        'police'
+    ){
+
+        player.job =
+            'Policía';
+
+
+        say(
+            '👮 Has elegido el oficio de policía. En una versión futura habrá misiones.'
+        );
+
+    }
+
+    else if(
+        building.type ===
+        'town'
+    ){
+
+        say(
+            '🏛️ Ayuntamiento: aquí podrás gestionar permisos y trabajos en futuras versiones.'
+        );
+
+    }
+
+    else if(
+        building.type ===
+        'market'
+    ){
+
+        player.money =
+            Math.max(
+                0,
+                player.money-10
+            );
+
+
+        say(
+            '🛒 Compraste algo en el mercado por RD$10.'
+        );
+
+    }
+
+    else if(
+        building.type ===
+        'house'
+    ){
+
+        say(
+            '🏠 Una casa tranquila del barrio. Más adelante podrás comprar y decorar propiedades.'
+        );
+
+    }
+
+
+    updateHud();
+
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHud(){
+
+    document.getElementById(
+        'money'
+    ).textContent =
+        player.money;
+
+
+    document.getElementById(
+        'name'
+    ).textContent =
+        player.name;
+
+
+    document.getElementById(
+        'job'
+    ).textContent =
+        '💼 '+
+        player.job;
+
+}
+
+
+/* =========================================================
+   ACTUALIZAR JUEGO
+========================================================= */
+
+function update(
+    dt
+){
+
+    let dx=0;
+    let dy=0;
+
+
+    if(
+        keys.w ||
+        keys.ArrowUp
+    ){
+
+        dy -= 1;
+
+    }
+
+
+    if(
+        keys.s ||
+        keys.ArrowDown
+    ){
+
+        dy += 1;
+
+    }
+
+
+    if(
+        keys.a ||
+        keys.ArrowLeft
+    ){
+
+        dx -= 1;
+
+    }
+
+
+    if(
+        keys.d ||
+        keys.ArrowRight
+    ){
+
+        dx += 1;
+
+    }
+
+
+    if(
+        dx ||
+        dy
+    ){
+
+        const length =
+            Math.hypot(
+                dx,
+                dy
+            );
+
+
+        dx /=
+            length;
+
+        dy /=
+            length;
+
+
+        const speed =
+            player.speed *
+            (
+                isRoad(
+                    player.x,
+                    player.y
+                )
+                    ? 1.15
+                    : 1
+            );
+
+
+        const newX =
+            player.x+
+            dx*
+            speed*
+            dt;
+
+
+        const newY =
+            player.y+
+            dy*
+            speed*
+            dt;
+
+
+        if(
+            !blocked(
+                newX,
+                player.y
+            )
+        ){
+
+            player.x =
+                newX;
+
+        }
+
+
+        if(
+            !blocked(
+                player.x,
+                newY
+            )
+        ){
+
+            player.y =
+                newY;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   DIBUJAR
+========================================================= */
+
+function draw(){
+
+    const cameraX =
+        clamp(
+            player.x-W/2,
+            0,
+            world.w-W
+        );
+
+
+    const cameraY =
+        clamp(
+            player.y-H/2,
+            0,
+            world.h-H
+        );
+
+
+    ctx.save();
+
+
+    ctx.translate(
+        -cameraX,
+        -cameraY
+    );
+
+
+    drawWorld();
+
+
+    npcs.forEach(
+        drawNPC
+    );
+
+
+    drawPlayer();
+
+
+    const hit =
+        nearestInteraction();
+
+
+    if(hit){
+
+        ctx.fillStyle =
+            '#f0c64b';
+
+
+        ctx.beginPath();
+
+
+        ctx.arc(
+            player.x,
+            player.y-43,
+            5+
+            Math.sin(
+                Date.now()/150
+            )*2,
+            0,
+            Math.PI*2
+        );
+
+
+        ctx.fill();
+
+
+        ctx.fillStyle =
+            '#fff';
+
+        ctx.font =
+            'bold 14px Arial';
+
+        ctx.textAlign =
+            'center';
+
+
+        ctx.fillText(
+            'E · INTERACTUAR',
+            player.x,
+            player.y-56
+        );
+
+    }
+
+
+    ctx.restore();
+
+
+    /* =====================================================
+       MINIMAPA
+    ===================================================== */
+
+    const miniWidth =
+        mini.clientWidth;
+
+    const miniHeight =
+        mini.clientHeight;
+
+
+    mctx.clearRect(
+        0,
+        0,
+        miniWidth,
+        miniHeight
+    );
+
+
+    mctx.fillStyle =
+        '#719b57';
+
+
+    mctx.fillRect(
+        0,
+        0,
+        miniWidth,
+        miniHeight
+    );
+
+
+    mctx.fillStyle =
+        '#77736b';
+
+
+    roads.forEach(
+        road => {
+
+            mctx.fillRect(
+
+                road.x/
+                world.w*
+                miniWidth,
+
+                road.y/
+                world.h*
+                miniHeight,
+
+                Math.max(
+                    2,
+                    road.w/
+                    world.w*
+                    miniWidth
+                ),
+
+                Math.max(
+                    2,
+                    road.h/
+                    world.h*
+                    miniHeight
+                )
+
+            );
+
+        }
+    );
+
+
+    buildings.forEach(
+        building => {
+
+            mctx.fillStyle =
+                '#c7a36a';
+
+
+            mctx.fillRect(
+
+                building.x/
+                world.w*
+                miniWidth,
+
+                building.y/
+                world.h*
+                miniHeight,
+
+                building.w/
+                world.w*
+                miniWidth,
+
+                building.h/
+                world.h*
+                miniHeight
+
+            );
+
+        }
+    );
+
+
+    mctx.fillStyle =
+        '#f0c64b';
+
+
+    mctx.beginPath();
+
+
+    mctx.arc(
+
+        player.x/
+        world.w*
+        miniWidth,
+
+        player.y/
+        world.h*
+        miniHeight,
+
+        4,
+
+        0,
+
+        Math.PI*2
+
+    );
+
+
+    mctx.fill();
+
+}
+
+
+/* =========================================================
+   LOOP
+========================================================= */
+
+function loop(
+    timestamp
+){
+
+    if(!last)
+        last =
+            timestamp;
+
+
+    const dt =
+        Math.min(
+            (timestamp-last)/
+            16.67,
+            2
+        );
+
+
+    last =
+        timestamp;
+
+
+    if(started){
+
+        update(dt);
+
+        draw();
+
+    }
+
+
+    requestAnimationFrame(
+        loop
+    );
+
+}
+
+
+/* =========================================================
+   TECLADO
+========================================================= */
+
+document.addEventListener(
+    'keydown',
+    event => {
+
+        const key =
+            event.key.length === 1
+                ? event.key.toLowerCase()
+                : event.key;
+
+
+        keys[key] =
+            true;
+
+
+        if(
+            [
+                'ArrowUp',
+                'ArrowDown',
+                'ArrowLeft',
+                'ArrowRight',
+                ' '
+            ].includes(
+                event.key
+            )
+        ){
+
+            event.preventDefault();
+
+        }
+
+
+        if(
+            key === 'e' &&
+            !event.repeat
+        ){
+
+            interact();
+
+        }
+
+
+        if(
+            key === 'm' &&
+            !event.repeat
+        ){
+
+            save();
+
+        }
+
+
+        if(
+            key === 'r' &&
+            !event.repeat
+        ){
+
+            resetPosition();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   SOLTAR TECLA
+========================================================= */
+
+document.addEventListener(
+    'keyup',
+    event => {
+
+        const key =
+            event.key.length === 1
+                ? event.key.toLowerCase()
+                : event.key;
+
+
+        keys[key] =
+            false;
+
+    }
+);
+
+
+/* =========================================================
+   CONTROLES DEL CELULAR
+========================================================= */
+
+document
+    .querySelectorAll(
+        '[data-key]'
+    )
+    .forEach(
+        button => {
+
+            const key =
+                button.dataset.key;
+
+
+            function press(
+                event
+            ){
+
+                event.preventDefault();
+
+                keys[key] =
+                    true;
+
+            }
+
+
+            function release(
+                event
+            ){
+
+                event.preventDefault();
+
+                keys[key] =
+                    false;
+
+            }
+
+
+            button.addEventListener(
+                'pointerdown',
+                press
+            );
+
+
+            button.addEventListener(
+                'pointerup',
+                release
+            );
+
+
+            button.addEventListener(
+                'pointercancel',
+                release
+            );
+
+
+            button.addEventListener(
+                'pointerleave',
+                release
+            );
+
+        }
+    );
+
+
+/* botón E móvil */
+
+document
+    .getElementById(
+        'action'
+    )
+    .addEventListener(
+        'pointerdown',
+        event => {
+
+            event.preventDefault();
+
+            interact();
+
+        }
+    );
+
+
+/* =========================================================
+   INICIAR
+========================================================= */
+
+document
+    .getElementById(
+        'start'
+    )
+    .addEventListener(
+        'click',
+        () => {
+
+            started =
+                true;
+
+
+            document
+                .getElementById(
+                    'intro'
+                )
+                .style.display =
+                    'none';
+
+
+            say(
+                '🇩🇴 Bienvenido al barrio. Explora y acércate a los edificios y personas.'
+            );
+
+
+            updateHud();
+
+        }
+    );
+
+
+/* =========================================================
+   INICIALIZACIÓN
+========================================================= */
+
+load();
+
+updateHud();
+
+requestAnimationFrame(
+    loop
+);
+
+</script>
+
+</body>
+</html>
