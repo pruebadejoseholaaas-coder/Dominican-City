@@ -3,637 +3,1037 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Dominican City 🇩🇴</title>
+<title>Dominican City 🇩🇴</title>
 
-    <style>
 
-        * {
-            box-sizing: border-box;
-        }
+<style>
 
-        html,
-        body {
-            margin: 0;
-            padding: 0;
+/* ==========================================================
+   CONFIGURACIÓN GENERAL
+========================================================== */
 
-            width: 100%;
-            height: 100%;
+* {
+    box-sizing: border-box;
+}
 
-            overflow: hidden;
 
-            background: #101820;
+html,
+body {
 
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
+    margin: 0;
+    padding: 0;
 
-            color: white;
-        }
+    width: 100%;
+    height: 100%;
 
+    overflow: hidden;
 
-        /* ==================================================
-           JUEGO
-        ================================================== */
+    background: #101820;
 
-        #game {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-            position: relative;
+    color: white;
+}
 
-            width: 100vw;
-            height: 100vh;
 
-            overflow: hidden;
+body {
 
-            background:
-                linear-gradient(
-                    #78b7e8 0%,
-                    #a9d6f5 45%,
-                    #76a85b 46%,
-                    #60934b 100%
-                );
-        }
+    user-select: none;
 
+}
 
-        /* ==================================================
-           MUNDO
-        ================================================== */
 
-        #world {
+/* ==========================================================
+   JUEGO
+========================================================== */
 
-            position: absolute;
+#game {
 
-            width: 6000px;
-            height: 4000px;
+    position: relative;
 
-            left: 0;
-            top: 0;
+    width: 100vw;
+    height: 100vh;
 
-            transform:
-                translate(
-                    0px,
-                    0px
-                );
+    overflow: hidden;
 
-            transform-origin:
-                top left;
-        }
+    background:
 
+        linear-gradient(
+            #6fb2e3 0%,
+            #a8d5f0 43%,
+            #78a95b 44%,
+            #5d914b 100%
+        );
+}
 
-        /* ==================================================
-           TERRENO
-        ================================================== */
 
-        .region {
+/* ==========================================================
+   MUNDO
+========================================================== */
 
-            position: absolute;
+#world {
 
-            border:
-                2px solid
-                rgba(0,0,0,0.12);
+    position: absolute;
 
-            border-radius: 10px;
-        }
+    width: 6000px;
+    height: 4000px;
 
+    left: 0;
+    top: 0;
 
-        .region-city {
+    transform:
+        translate(0px, 0px);
 
-            background:
-                #7fa85b;
-        }
+    transform-origin:
+        top left;
 
+}
 
-        .region-rural {
 
-            background:
-                #6d9d58;
-        }
+/* ==========================================================
+   REGIONES
+========================================================== */
 
+.region {
 
-        /* ==================================================
-           CARRETERAS
-        ================================================== */
+    position: absolute;
 
-        .road {
+    border:
+        2px solid
+        rgba(0,0,0,0.12);
 
-            position: absolute;
+    border-radius: 12px;
 
-            background:
-                #555;
+}
 
-            border:
-                3px solid
-                #333;
-        }
 
+.region-city {
 
-        .road::after {
+    background:
+        #7fa85b;
 
-            content: "";
+}
 
-            position: absolute;
 
-            left: 0;
-            top: 50%;
+.region-rural {
 
-            width: 100%;
-            height: 5px;
+    background:
+        #6d9d58;
 
-            transform:
-                translateY(-50%);
+}
 
-            background:
-                repeating-linear-gradient(
-                    90deg,
-                    #f6d365 0px,
-                    #f6d365 40px,
-                    transparent 40px,
-                    transparent 80px
-                );
-        }
 
+/* ==========================================================
+   CARRETERAS
+========================================================== */
 
-        /* ==================================================
-           EDIFICIOS
-        ================================================== */
+.road {
 
-        .location {
+    position: absolute;
 
-            position: absolute;
+    background:
+        #555;
 
-            display: flex;
+    border:
+        3px solid
+        #333;
 
-            align-items: center;
-            justify-content: center;
+}
 
-            text-align: center;
 
-            color: white;
+.road::after {
 
-            font-weight: bold;
+    content: "";
 
-            font-size: 15px;
+    position: absolute;
 
-            border:
-                3px solid
-                rgba(0,0,0,0.35);
+    left: 0;
+    top: 50%;
 
-            border-radius: 8px;
+    width: 100%;
+    height: 5px;
 
-            box-shadow:
-                0 5px 12px
-                rgba(0,0,0,0.25);
+    transform:
+        translateY(-50%);
 
-            text-shadow:
-                1px 1px 2px black;
+    background:
 
-            cursor: default;
-        }
+        repeating-linear-gradient(
+            90deg,
 
+            #f6d365 0px,
+            #f6d365 40px,
 
-        .house {
-            background: #c77b45;
-        }
+            transparent 40px,
+            transparent 80px
+        );
 
-        .shop {
-            background: #d39b35;
-        }
+}
 
-        .barber {
-            background: #4169a1;
-        }
 
-        .school {
-            background: #d6c08d;
-            color: #222;
-            text-shadow: none;
-        }
+/* ==========================================================
+   EDIFICIOS
+========================================================== */
 
-        .club {
-            background: #753c7d;
-        }
+.location {
 
-        .market {
-            background: #ad573e;
-        }
+    position: absolute;
 
-        .transport {
-            background: #3c3c3c;
-        }
+    display: flex;
 
-        .sports {
-            background: #427c3b;
-        }
+    align-items: center;
+    justify-content: center;
 
-        .farm {
-            background: #8a6b3d;
-        }
+    text-align: center;
 
-        .beach {
-            background: #29a9c9;
-        }
+    color: white;
 
+    font-weight: bold;
 
-        /* ==================================================
-           ÁRBOLES
-        ================================================== */
+    font-size: 15px;
 
-        .tree {
+    border:
+        3px solid
+        rgba(0,0,0,0.35);
 
-            position: absolute;
+    border-radius: 8px;
 
-            width: 32px;
-            height: 32px;
+    box-shadow:
+        0 5px 12px
+        rgba(0,0,0,0.25);
 
-            border-radius: 50%;
+    text-shadow:
+        1px 1px 2px black;
 
-            background:
-                #286b32;
+}
 
-            border:
-                3px solid
-                #17451f;
 
-            box-shadow:
-                0 8px 0
-                #70452a;
-        }
+.house {
 
+    background:
+        #c77b45;
 
-        /* ==================================================
-           NPC
-        ================================================== */
+}
 
-        .npc {
 
-            position: absolute;
+.shop {
 
-            width: 34px;
-            height: 48px;
+    background:
+        #d39b35;
 
-            border-radius:
-                50% 50% 35% 35%;
+}
 
-            border:
-                3px solid
-                rgba(0,0,0,0.45);
 
-            box-shadow:
-                0 3px 6px
-                rgba(0,0,0,0.35);
+.barber {
 
-            z-index: 20;
-        }
+    background:
+        #4169a1;
 
+}
 
-        .npc::before {
 
-            content: "";
+.school {
 
-            position: absolute;
+    background:
+        #d6c08d;
 
-            width: 18px;
-            height: 18px;
+    color: #222;
 
-            left: 5px;
-            top: -11px;
+    text-shadow: none;
 
-            border-radius: 50%;
+}
 
-            background: #8d5524;
 
-            border:
-                2px solid
-                #4d2d16;
-        }
+.club {
 
+    background:
+        #753c7d;
 
-        /* ==================================================
-           JUGADOR
-        ================================================== */
+}
 
-        #player {
 
-            position: absolute;
+.market {
 
-            width: 42px;
-            height: 58px;
+    background:
+        #ad573e;
 
-            z-index: 100;
+}
 
-            border:
-                4px solid
-                #111;
 
-            border-radius:
-                50% 50% 30% 30%;
+.transport {
 
-            background:
-                #d62828;
+    background:
+        #3c3c3c;
 
-            box-shadow:
-                0 5px 12px
-                rgba(0,0,0,0.5);
-        }
+}
 
 
-        #player::before {
+.sports {
 
-            content: "";
+    background:
+        #427c3b;
 
-            position: absolute;
+}
 
-            width: 23px;
-            height: 23px;
 
-            left: 5px;
-            top: -15px;
+.farm {
 
-            border-radius: 50%;
+    background:
+        #8a6b3d;
 
-            background:
-                #8d5524;
+}
 
-            border:
-                3px solid
-                #4d2d16;
-        }
 
+.beach {
 
-        /* ==================================================
-           INTERFAZ
-        ================================================== */
+    background:
+        #29a9c9;
 
-        #hud {
+}
 
-            position: fixed;
 
-            left: 15px;
-            top: 15px;
+/* ==========================================================
+   ÁRBOLES
+========================================================== */
 
-            z-index: 1000;
+.tree {
 
-            width: 285px;
+    position: absolute;
 
-            padding: 15px;
+    width: 32px;
+    height: 32px;
 
-            border-radius: 14px;
+    border-radius: 50%;
 
-            background:
-                rgba(10, 15, 20, 0.88);
+    background:
+        #286b32;
 
-            border:
-                2px solid
-                rgba(255,255,255,0.2);
+    border:
+        3px solid
+        #17451f;
 
-            box-shadow:
-                0 8px 25px
-                rgba(0,0,0,0.35);
-        }
+    box-shadow:
+        0 8px 0
+        #70452a;
 
+}
 
-        #hud h1 {
 
-            margin:
-                0 0 8px 0;
+/* ==========================================================
+   NPC
+========================================================== */
 
-            font-size: 21px;
+.npc {
 
-            color:
-                #f7d046;
-        }
+    position: absolute;
 
+    width: 34px;
+    height: 48px;
 
-        .stat {
+    border-radius:
+        50% 50% 35% 35%;
 
-            margin:
-                7px 0;
-        }
+    border:
+        3px solid
+        rgba(0,0,0,0.45);
 
+    box-shadow:
+        0 3px 6px
+        rgba(0,0,0,0.35);
 
-        .bar {
+    z-index: 20;
 
-            width: 100%;
-            height: 9px;
+}
 
-            margin-top: 3px;
 
-            overflow: hidden;
+.npc::before {
 
-            border-radius: 20px;
+    content: "";
 
-            background:
-                #333;
-        }
+    position: absolute;
 
+    width: 18px;
+    height: 18px;
 
-        .bar-fill {
+    left: 5px;
+    top: -11px;
 
-            height: 100%;
+    border-radius: 50%;
 
-            width: 100%;
+    background:
+        #8d5524;
 
-            transition:
-                width 0.2s;
-        }
+    border:
+        2px solid
+        #4d2d16;
 
+}
 
-        #healthFill {
-            background: #e63946;
-        }
 
-        #energyFill {
-            background: #f1c40f;
-        }
+/* ==========================================================
+   PERSONAJE PRINCIPAL
+========================================================== */
 
-        #hungerFill {
-            background: #2ecc71;
-        }
+#player {
 
+    position: absolute;
 
-        #time {
+    width: 46px;
+    height: 64px;
 
-            margin-top: 10px;
+    z-index: 100;
 
-            padding-top: 10px;
+    border-radius:
+        18px 18px 12px 12px;
 
-            border-top:
-                1px solid
-                rgba(255,255,255,0.15);
+    background:
 
-            color:
-                #f7d046;
-        }
+        linear-gradient(
+            90deg,
 
+            #173f8a,
+            #2458b8,
+            #173f8a
+        );
 
-        /* ==================================================
-           MENSAJE
-        ================================================== */
+    border:
+        3px solid #111;
 
-        #message {
+    box-shadow:
 
-            position: fixed;
+        0 6px 12px
+        rgba(0,0,0,0.45);
 
-            left: 50%;
+    transition:
+        transform 0.12s ease;
 
-            bottom: 35px;
+}
 
-            transform:
-                translateX(-50%);
 
-            z-index: 2000;
+/* CABEZA */
 
-            max-width: 700px;
+#player::before {
 
-            padding:
-                14px 22px;
+    content: "";
 
-            border-radius: 12px;
+    position: absolute;
 
-            background:
-                rgba(0,0,0,0.85);
+    width: 25px;
+    height: 25px;
 
-            border:
-                2px solid
-                rgba(255,255,255,0.2);
+    left: 7px;
+    top: -20px;
 
-            font-size: 16px;
+    border-radius: 50%;
 
-            text-align: center;
+    background:
+        #8d5524;
 
-            opacity: 0;
+    border:
+        3px solid #3d2414;
 
-            transition:
-                opacity 0.2s;
-        }
+    box-shadow:
 
+        inset 0 3px 0
+        #21150d;
 
-        #message.visible {
-            opacity: 1;
-        }
+}
 
 
-        /* ==================================================
-           CONTROLES
-        ================================================== */
+/* CAMISA */
 
-        #controls {
+#player::after {
 
-            position: fixed;
+    content: "";
 
-            right: 15px;
-            bottom: 15px;
+    position: absolute;
 
-            z-index: 1000;
+    left: 7px;
+    top: 24px;
 
-            padding: 13px;
+    width: 26px;
+    height: 4px;
 
-            max-width: 260px;
+    background:
+        #f4d35e;
 
-            border-radius: 12px;
+    border-radius: 5px;
 
-            background:
-                rgba(10,15,20,0.85);
+}
 
-            font-size: 13px;
 
-            line-height: 1.6;
-        }
+/* ==========================================================
+   CAMINAR
+========================================================== */
 
+#player.walking {
 
-        #controls strong {
+    animation:
+        playerWalk
+        0.35s
+        infinite
+        alternate;
 
-            color:
-                #f7d046;
-        }
+}
 
 
-        /* ==================================================
-           MINIMAPA
-        ================================================== */
+@keyframes playerWalk {
 
-        #minimap {
+    from {
 
-            position: fixed;
+        transform:
+            translateY(0px);
 
-            right: 15px;
-            top: 15px;
+    }
 
-            width: 190px;
-            height: 125px;
+    to {
 
-            z-index: 1000;
+        transform:
+            translateY(-4px);
 
-            border:
-                3px solid
-                rgba(255,255,255,0.7);
+    }
 
-            border-radius: 10px;
+}
 
-            background:
-                #60934b;
 
-            overflow: hidden;
-        }
+/* ==========================================================
+   BAILE
+========================================================== */
 
+#player.dancing {
 
-        #miniPlayer {
+    animation:
+        playerDance
+        0.55s
+        infinite
+        ease-in-out;
 
-            position: absolute;
+    background:
 
-            width: 7px;
-            height: 7px;
+        linear-gradient(
+            90deg,
 
-            border-radius: 50%;
+            #e63946,
+            #f7d046,
+            #e63946
+        );
 
-            background:
-                red;
+    box-shadow:
 
-            border:
-                1px solid
-                white;
-        }
+        0 0 18px
+        rgba(247,208,70,0.9);
 
+}
 
-        /* ==================================================
-           PAUSA
-        ================================================== */
 
-        #paused {
+@keyframes playerDance {
 
-            display: none;
+    0% {
 
-            position: fixed;
+        transform:
+            rotate(-12deg)
+            translateY(0);
 
-            inset: 0;
+    }
 
-            z-index: 3000;
+    25% {
 
-            align-items: center;
-            justify-content: center;
+        transform:
+            rotate(12deg)
+            translateY(-8px);
 
-            background:
-                rgba(0,0,0,0.7);
+    }
 
-            font-size: 42px;
+    50% {
 
-            font-weight: bold;
-        }
+        transform:
+            rotate(-12deg)
+            translateY(-3px);
 
+    }
 
-        #paused.visible {
+    75% {
 
-            display: flex;
-        }
+        transform:
+            rotate(12deg)
+            translateY(-10px);
 
-    </style>
+    }
+
+    100% {
+
+        transform:
+            rotate(-12deg)
+            translateY(0);
+
+    }
+
+}
+
+
+/* ==========================================================
+   HUD
+========================================================== */
+
+#hud {
+
+    position: fixed;
+
+    left: 15px;
+    top: 15px;
+
+    z-index: 1000;
+
+    width: 300px;
+
+    padding: 16px;
+
+    border-radius: 15px;
+
+    background:
+        rgba(10,15,20,0.90);
+
+    border:
+        2px solid
+        rgba(255,255,255,0.22);
+
+    box-shadow:
+
+        0 8px 25px
+        rgba(0,0,0,0.4);
+
+    backdrop-filter:
+        blur(5px);
+
+}
+
+
+#hud h1 {
+
+    margin:
+        0 0 8px 0;
+
+    font-size: 22px;
+
+    color:
+        #f7d046;
+
+}
+
+
+.stat {
+
+    margin:
+        8px 0;
+
+}
+
+
+.bar {
+
+    width: 100%;
+
+    height: 9px;
+
+    margin-top: 4px;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background:
+        #333;
+
+}
+
+
+.bar-fill {
+
+    height: 100%;
+
+    width: 100%;
+
+    transition:
+        width 0.2s;
+
+}
+
+
+#healthFill {
+
+    background:
+        #e63946;
+
+}
+
+
+#energyFill {
+
+    background:
+        #f1c40f;
+
+}
+
+
+#hungerFill {
+
+    background:
+        #2ecc71;
+
+}
+
+
+#time {
+
+    margin-top: 12px;
+
+    padding-top: 10px;
+
+    border-top:
+        1px solid
+        rgba(255,255,255,0.15);
+
+    color:
+        #f7d046;
+
+}
+
+
+/* ==========================================================
+   MENSAJES
+========================================================== */
+
+#message {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 110px;
+
+    transform:
+        translateX(-50%);
+
+    z-index: 2000;
+
+    max-width: 700px;
+
+    min-width: 280px;
+
+    padding:
+        15px 25px;
+
+    border-radius: 14px;
+
+    background:
+        rgba(0,0,0,0.90);
+
+    border:
+        2px solid
+        rgba(255,255,255,0.25);
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    text-align: center;
+
+    opacity: 0;
+
+    transition:
+        opacity 0.25s;
+
+    box-shadow:
+
+        0 8px 20px
+        rgba(0,0,0,0.45);
+
+}
+
+
+#message.visible {
+
+    opacity: 1;
+
+}
+
+
+/* ==========================================================
+   INDICADOR DE BAILE
+========================================================== */
+
+#danceIndicator {
+
+    position: fixed;
+
+    left: 50%;
+    top: 22%;
+
+    transform:
+        translateX(-50%);
+
+    z-index: 2500;
+
+    padding:
+        12px 25px;
+
+    border-radius: 30px;
+
+    background:
+
+        linear-gradient(
+            135deg,
+
+            #e63946,
+            #f7d046
+        );
+
+    color: white;
+
+    font-size: 22px;
+
+    font-weight: bold;
+
+    text-shadow:
+        2px 2px 3px
+        rgba(0,0,0,0.5);
+
+    box-shadow:
+
+        0 5px 20px
+        rgba(0,0,0,0.4);
+
+    display: none;
+
+    animation:
+
+        danceIndicator
+        0.6s
+        infinite
+        alternate;
+
+}
+
+
+#danceIndicator.visible {
+
+    display: block;
+
+}
+
+
+@keyframes danceIndicator {
+
+    from {
+
+        transform:
+            translateX(-50%)
+            scale(1);
+
+    }
+
+    to {
+
+        transform:
+            translateX(-50%)
+            scale(1.08);
+
+    }
+
+}
+
+
+/* ==========================================================
+   CONTROLES
+========================================================== */
+
+#controls {
+
+    position: fixed;
+
+    right: 15px;
+    bottom: 15px;
+
+    z-index: 1000;
+
+    padding: 14px;
+
+    width: 270px;
+
+    border-radius: 13px;
+
+    background:
+        rgba(10,15,20,0.90);
+
+    border:
+        2px solid
+        rgba(255,255,255,0.18);
+
+    font-size: 13px;
+
+    line-height: 1.8;
+
+    box-shadow:
+
+        0 6px 20px
+        rgba(0,0,0,0.35);
+
+}
+
+
+#controls strong {
+
+    color:
+        #f7d046;
+
+    font-size: 15px;
+
+}
+
+
+/* ==========================================================
+   MINIMAPA
+========================================================== */
+
+#minimap {
+
+    position: fixed;
+
+    right: 15px;
+    top: 15px;
+
+    width: 190px;
+    height: 125px;
+
+    z-index: 1000;
+
+    border:
+        3px solid
+        rgba(255,255,255,0.75);
+
+    border-radius: 10px;
+
+    background:
+        #60934b;
+
+    overflow: hidden;
+
+    box-shadow:
+
+        0 5px 15px
+        rgba(0,0,0,0.4);
+
+}
+
+
+#miniPlayer {
+
+    position: absolute;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background:
+        red;
+
+    border:
+        1px solid white;
+
+    transform:
+        translate(-50%, -50%);
+
+}
+
+
+/* ==========================================================
+   PAUSA
+========================================================== */
+
+#paused {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 3000;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(0,0,0,0.72);
+
+    font-size: 46px;
+
+    font-weight: bold;
+
+}
+
+
+#paused.visible {
+
+    display: flex;
+
+}
+
+
+/* ==========================================================
+   MÓVILES
+========================================================== */
+
+@media (
+    max-width: 700px
+) {
+
+    #hud {
+
+        width: 230px;
+
+        font-size: 12px;
+
+    }
+
+
+    #hud h1 {
+
+        font-size: 17px;
+
+    }
+
+
+    #minimap {
+
+        width: 140px;
+        height: 90px;
+
+    }
+
+
+    #controls {
+
+        width: 200px;
+
+        font-size: 11px;
+
+    }
+
+}
+
+</style>
 
 </head>
 
@@ -644,212 +1044,268 @@
 <div id="game">
 
 
-    <!-- ================================================
-         MUNDO
-    ================================================= -->
+<!-- ======================================================
+     MUNDO
+====================================================== -->
 
-    <div id="world">
+<div id="world">
 
-        <div id="regions"></div>
+    <div id="regions"></div>
 
-        <div id="roads"></div>
+    <div id="roads"></div>
 
-        <div id="locations"></div>
+    <div id="locations"></div>
 
-        <div id="trees"></div>
+    <div id="trees"></div>
 
-        <div id="npcs"></div>
+    <div id="npcs"></div>
 
-        <div id="player"></div>
+    <div id="player"></div>
+
+</div>
+
+
+<!-- ======================================================
+     HUD
+====================================================== -->
+
+<div id="hud">
+
+    <h1>
+        🇩🇴 Dominican City
+    </h1>
+
+
+    <div>
+
+        👤
+        <strong id="playerName">
+            José
+        </strong>
 
     </div>
 
 
-    <!-- ================================================
-         HUD
-    ================================================= -->
+    <div class="stat">
 
-    <div id="hud">
+        💰 Dinero:
+        $<span id="money">25</span>
 
-        <h1>
-            🇩🇴 Dominican City
-        </h1>
+    </div>
 
-        <div>
-            <strong id="playerName">
-                José
-            </strong>
-        </div>
 
-        <div class="stat">
-            💰 Dinero:
-            $<span id="money">25</span>
-        </div>
+    <div class="stat">
 
-        <div class="stat">
+        ❤️ Salud
 
-            ❤️ Salud
+        <div class="bar">
 
-            <div class="bar">
-                <div
-                    id="healthFill"
-                    class="bar-fill">
-                </div>
+            <div
+                id="healthFill"
+                class="bar-fill">
             </div>
 
         </div>
 
+    </div>
 
-        <div class="stat">
 
-            ⚡ Energía
+    <div class="stat">
 
-            <div class="bar">
-                <div
-                    id="energyFill"
-                    class="bar-fill">
-                </div>
+        ⚡ Energía
+
+        <div class="bar">
+
+            <div
+                id="energyFill"
+                class="bar-fill">
             </div>
 
         </div>
 
+    </div>
 
-        <div class="stat">
 
-            🍗 Hambre
+    <div class="stat">
 
-            <div class="bar">
-                <div
-                    id="hungerFill"
-                    class="bar-fill">
-                </div>
+        🍗 Hambre
+
+        <div class="bar">
+
+            <div
+                id="hungerFill"
+                class="bar-fill">
             </div>
 
         </div>
 
-
-        <div class="stat">
-
-            💼 Trabajo:
-            <span id="job">
-                Desempleado
-            </span>
-
-        </div>
+    </div>
 
 
-        <div id="time">
+    <div class="stat">
 
-            🕐
-            <span id="clock">
-                08:00
-            </span>
+        💼 Trabajo:
 
-            |
-
-            📅
-            <span id="date">
-                1/1/1965
-            </span>
-
-        </div>
+        <span id="job">
+            Desempleado
+        </span>
 
     </div>
 
 
-    <!-- ================================================
-         MINIMAPA
-    ================================================= -->
+    <div id="time">
 
-    <div id="minimap">
+        🕐
+        <span id="clock">
+            08:00
+        </span>
 
-        <div id="miniPlayer"></div>
+        &nbsp;|&nbsp;
 
-    </div>
-
-
-    <!-- ================================================
-         CONTROLES
-    ================================================= -->
-
-    <div id="controls">
-
-        <strong>CONTROLES</strong>
-
-        <br>
-
-        W A S D / Flechas
-        → Moverse
-
-        <br>
-
-        E → Interactuar
-
-        <br>
-
-        B → Bailar 💃
-
-        <br>
-
-        G → Guardar 💾
-
-        <br>
-
-        L → Cargar
-
-        <br>
-
-        P → Pausa
+        📅
+        <span id="date">
+            1/1/1965
+        </span>
 
     </div>
 
-
-    <!-- ================================================
-         MENSAJES
-    ================================================= -->
-
-    <div id="message"></div>
+</div>
 
 
-    <!-- ================================================
-         PAUSA
-    ================================================= -->
+<!-- ======================================================
+     MINIMAPA
+====================================================== -->
 
-    <div id="paused">
+<div id="minimap">
 
-        PAUSA
+    <div id="miniPlayer"></div>
 
-    </div>
+</div>
+
+
+<!-- ======================================================
+     CONTROLES
+====================================================== -->
+
+<div id="controls">
+
+    <strong>
+        🎮 CONTROLES
+    </strong>
+
+    <br>
+
+    ⬆️⬇️⬅️➡️ / WASD
+    → Moverse
+
+    <br>
+
+    <strong>E</strong>
+    → Interactuar
+
+    <br>
+
+    <strong>B</strong>
+    → Bailar 💃
+
+    <br>
+
+    <strong>T</strong>
+    → Trabajar 💼
+
+    <br>
+
+    <strong>F</strong>
+    → Terminar trabajo
+
+    <br>
+
+    <strong>G</strong>
+    → Guardar 💾
+
+    <br>
+
+    <strong>L</strong>
+    → Cargar
+
+    <br>
+
+    <strong>P</strong>
+    → Pausa
+
+</div>
+
+
+<!-- ======================================================
+     MENSAJE
+====================================================== -->
+
+<div id="message"></div>
+
+
+<!-- ======================================================
+     INDICADOR DE BAILE
+====================================================== -->
+
+<div id="danceIndicator">
+
+    💃 BAILANDO 💃
+
+</div>
+
+
+<!-- ======================================================
+     PAUSA
+====================================================== -->
+
+<div id="paused">
+
+    ⏸️ PAUSA
+
+</div>
 
 
 </div>
 
 
+<!-- ======================================================
+     MOTOR DEL JUEGO
+====================================================== -->
+
 <script type="module">
 
+
 import {
+
     player
+
 } from "./game/player.js";
 
 
 import {
+
     WORLD,
     regions,
     roads,
     locations,
     trees
+
 } from "./game/world.js";
 
 
 import {
+
     npcs
+
 } from "./game/npcs.js";
 
 
 import {
+
     startGame,
     update,
     game
+
 } from "./game/game.js";
 
 
@@ -862,40 +1318,48 @@ const world =
         "world"
     );
 
+
 const playerElement =
     document.getElementById(
         "player"
     );
+
 
 const regionsElement =
     document.getElementById(
         "regions"
     );
 
+
 const roadsElement =
     document.getElementById(
         "roads"
     );
+
 
 const locationsElement =
     document.getElementById(
         "locations"
     );
 
+
 const treesElement =
     document.getElementById(
         "trees"
     );
+
 
 const npcsElement =
     document.getElementById(
         "npcs"
     );
 
+
 const messageElement =
     document.getElementById(
         "message"
     );
+
 
 const pausedElement =
     document.getElementById(
@@ -904,7 +1368,7 @@ const pausedElement =
 
 
 /* ======================================================
-   CREAR REGIONES
+   REGIONES
 ====================================================== */
 
 function createRegions() {
@@ -921,35 +1385,44 @@ function createRegions() {
                 "div"
             );
 
+
         element.className =
             `region region-${region.type}`;
+
 
         element.style.left =
             region.x + "px";
 
+
         element.style.top =
             region.y + "px";
+
 
         element.style.width =
             region.width + "px";
 
+
         element.style.height =
             region.height + "px";
+
 
         regionsElement.appendChild(
             element
         );
+
     }
+
 }
 
 
 /* ======================================================
-   CREAR CARRETERAS
+   CARRETERAS
 ====================================================== */
 
 function createRoads() {
 
     roadsElement.innerHTML = "";
+
 
     for (
         const road
@@ -961,35 +1434,44 @@ function createRoads() {
                 "div"
             );
 
+
         element.className =
             "road";
+
 
         element.style.left =
             road.x + "px";
 
+
         element.style.top =
             road.y + "px";
+
 
         element.style.width =
             road.width + "px";
 
+
         element.style.height =
             road.height + "px";
+
 
         roadsElement.appendChild(
             element
         );
+
     }
+
 }
 
 
 /* ======================================================
-   CREAR LUGARES
+   LUGARES
 ====================================================== */
 
 function createLocations() {
 
     locationsElement.innerHTML = "";
+
 
     for (
         const location
@@ -1001,38 +1483,48 @@ function createLocations() {
                 "div"
             );
 
+
         element.className =
             `location ${location.type}`;
+
 
         element.textContent =
             location.name;
 
+
         element.style.left =
             location.x + "px";
+
 
         element.style.top =
             location.y + "px";
 
+
         element.style.width =
             location.width + "px";
+
 
         element.style.height =
             location.height + "px";
 
+
         locationsElement.appendChild(
             element
         );
+
     }
+
 }
 
 
 /* ======================================================
-   CREAR ÁRBOLES
+   ÁRBOLES
 ====================================================== */
 
 function createTrees() {
 
     treesElement.innerHTML = "";
+
 
     for (
         const tree
@@ -1044,32 +1536,40 @@ function createTrees() {
                 "div"
             );
 
+
         element.className =
             "tree";
+
 
         element.style.left =
             tree.x + "px";
 
+
         element.style.top =
             tree.y + "px";
+
 
         element.style.transform =
             `scale(${tree.size / 32})`;
 
+
         treesElement.appendChild(
             element
         );
+
     }
+
 }
 
 
 /* ======================================================
-   CREAR NPCS
+   NPCS
 ====================================================== */
 
 function createNPCs() {
 
     npcsElement.innerHTML = "";
+
 
     for (
         const npc
@@ -1081,39 +1581,49 @@ function createNPCs() {
                 "div"
             );
 
+
         element.className =
             "npc";
+
 
         element.title =
             `${npc.name} — ${npc.profession}`;
 
+
         element.style.background =
             npc.color;
+
 
         element.style.left =
             npc.x + "px";
 
+
         element.style.top =
             npc.y + "px";
+
 
         element.dataset.id =
             npc.id;
 
+
         npcsElement.appendChild(
             element
         );
+
     }
+
 }
 
 
 /* ======================================================
-   ACTUALIZAR NPCS VISUALES
+   ACTUALIZAR NPCS
 ====================================================== */
 
 function updateNPCVisuals() {
 
     const elements =
         npcsElement.children;
+
 
     for (
         let i = 0;
@@ -1124,19 +1634,27 @@ function updateNPCVisuals() {
         const element =
             elements[i];
 
+
         const npc =
             npcs[i];
 
+
         if (!npc) {
+
             continue;
+
         }
+
 
         element.style.left =
             npc.x + "px";
 
+
         element.style.top =
             npc.y + "px";
+
     }
+
 }
 
 
@@ -1149,13 +1667,85 @@ function updatePlayerVisual() {
     playerElement.style.left =
         player.x + "px";
 
+
     playerElement.style.top =
         player.y + "px";
+
+
+    /* Caminar */
+
+    if (
+        player.moving &&
+        !player.dancing
+    ) {
+
+        playerElement.classList.add(
+            "walking"
+        );
+
+    } else {
+
+        playerElement.classList.remove(
+            "walking"
+        );
+
+    }
+
+
+    /* Bailar */
+
+    if (
+        player.dancing
+    ) {
+
+        playerElement.classList.add(
+            "dancing"
+        );
+
+    } else {
+
+        playerElement.classList.remove(
+            "dancing"
+        );
+
+    }
+
 }
 
 
 /* ======================================================
-   ACTUALIZAR CÁMARA
+   INDICADOR DE BAILE
+====================================================== */
+
+function updateDanceIndicator() {
+
+    const indicator =
+        document.getElementById(
+            "danceIndicator"
+        );
+
+
+    if (
+        player.dancing
+    ) {
+
+        indicator.classList.add(
+            "visible"
+        );
+
+    } else {
+
+        indicator.classList.remove(
+            "visible"
+        );
+
+    }
+
+}
+
+
+/* ======================================================
+   CÁMARA
 ====================================================== */
 
 function updateCamera() {
@@ -1165,11 +1755,12 @@ function updateCamera() {
             ${-game.camera.x}px,
             ${-game.camera.y}px
         )`;
+
 }
 
 
 /* ======================================================
-   ACTUALIZAR HUD
+   HUD
 ====================================================== */
 
 function updateHUD() {
@@ -1246,7 +1837,7 @@ function updateHUD() {
         `${game.time.day}/${game.time.month}/${game.time.year}`;
 
 
-    /* Mensaje */
+    /* Mensajes */
 
     if (
         game.messageTimer > 0
@@ -1254,6 +1845,7 @@ function updateHUD() {
 
         messageElement.textContent =
             game.message;
+
 
         messageElement.classList.add(
             "visible"
@@ -1264,6 +1856,7 @@ function updateHUD() {
         messageElement.classList.remove(
             "visible"
         );
+
     }
 
 
@@ -1282,7 +1875,9 @@ function updateHUD() {
         pausedElement.classList.remove(
             "visible"
         );
+
     }
+
 }
 
 
@@ -1313,13 +1908,15 @@ function updateMinimap() {
     miniPlayer.style.left =
         `${x}%`;
 
+
     miniPlayer.style.top =
         `${y}%`;
+
 }
 
 
 /* ======================================================
-   INICIAR MUNDO
+   INICIALIZAR
 ====================================================== */
 
 createRegions();
@@ -1336,7 +1933,7 @@ startGame();
 
 
 /* ======================================================
-   LOOP PRINCIPAL
+   LOOP DEL JUEGO
 ====================================================== */
 
 let lastTime =
@@ -1349,10 +1946,16 @@ function gameLoop(
 
     const delta =
         Math.min(
-            (currentTime - lastTime) /
-            16.666,
+
+            (
+                currentTime -
+                lastTime
+            ) / 16.666,
+
             3
+
         );
+
 
     lastTime =
         currentTime;
@@ -1360,13 +1963,21 @@ function gameLoop(
 
     update(delta);
 
+
     updatePlayerVisual();
+
+
+    updateDanceIndicator();
+
 
     updateNPCVisuals();
 
+
     updateCamera();
 
+
     updateHUD();
+
 
     updateMinimap();
 
@@ -1374,6 +1985,7 @@ function gameLoop(
     requestAnimationFrame(
         gameLoop
     );
+
 }
 
 
@@ -1381,7 +1993,9 @@ requestAnimationFrame(
     gameLoop
 );
 
+
 </script>
+
 
 </body>
 
