@@ -2,7 +2,7 @@
 // DOMINICAN CITY - JOBS V3
 // Sistema de trabajos y economía
 // ============================================================
-
+j
 import {
     addMoney,
     changeReputation,
