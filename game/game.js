@@ -1,14 +1,16 @@
 // ============================================================
-// DOMINICAN CITY - GAME ENGINE V3
-// Cerebro principal del juego
+// DOMINICAN CITY - GAME ENGINE V5
+// Motor principal del mundo abierto
 // ============================================================
 
 import {
     player,
     movePlayer,
     limitPlayer,
-    toggleDance
+    toggleDance,
+    updateDance
 } from "./player.js";
+
 
 import {
     WORLD,
@@ -20,6 +22,7 @@ import {
     getCurrentRegion
 } from "./world.js";
 
+
 import {
     npcs,
     updateNPCs,
@@ -28,6 +31,7 @@ import {
     changeRelationship
 } from "./npcs.js";
 
+
 import {
     jobs,
     workState,
@@ -35,8 +39,10 @@ import {
     startWork,
     work,
     finishWork,
-    getCurrentJob
+    getCurrentJob,
+    updateWork
 } from "./jobs.js";
+
 
 import {
     saveGame,
@@ -55,30 +61,65 @@ export const game = {
 
     paused: false,
 
+
+    // --------------------------------------------------------
+    // TIEMPO
+    // --------------------------------------------------------
+
     time: {
+
         hour: 8,
+
         minute: 0,
+
         day: 1,
+
         month: 1,
+
         year: 1965
+
     },
+
+
+    // --------------------------------------------------------
+    // TECLADO
+    // --------------------------------------------------------
 
     keys: {},
 
+
+    // --------------------------------------------------------
+    // CÁMARA
+    // --------------------------------------------------------
+
     camera: {
+
         x: 0,
+
         y: 0
+
     },
+
+
+    // --------------------------------------------------------
+    // MENSAJES
+    // --------------------------------------------------------
 
     message: "",
 
     messageTimer: 0,
+
+
+    // --------------------------------------------------------
+    // MUNDO
+    // --------------------------------------------------------
 
     currentRegion: null,
 
     currentLocation: null,
 
     nearbyNPC: null
+
 };
 
 
@@ -89,35 +130,47 @@ export const game = {
 export function startGame() {
 
     console.log(
-        "🇩🇴 DOMINICAN CITY V3"
+        "🇩🇴 DOMINICAN CITY V5"
     );
+
 
     console.log(
         "Mundo:",
         WORLD.name
     );
 
+
     console.log(
         "Año:",
         WORLD.year
     );
 
-    game.running = true;
+
+    game.running =
+        true;
+
 
     setupKeyboard();
 
-    if (hasSaveGame()) {
+
+    if (
+        hasSaveGame()
+    ) {
 
         console.log(
             "Existe una partida guardada."
         );
+
     }
+
 
     updateWorldState();
 
+
     showMessage(
-        "Bienvenido a Dominican City 🇩🇴"
+        "🇩🇴 Bienvenido a Dominican City"
     );
+
 }
 
 
@@ -134,83 +187,237 @@ function setupKeyboard() {
             const key =
                 event.key.toLowerCase();
 
-            game.keys[key] = true;
+
+            /*
+             * Evitar que mantener una tecla
+             * provoque múltiples acciones.
+             */
+
+            const firstPress =
+                !game.keys[key];
 
 
-            // --------------------------
-            // P = pausa
-            // --------------------------
+            game.keys[key] =
+                true;
 
-            if (key === "p") {
+
+            if (
+                !firstPress
+            ) {
+
+                return;
+
+            }
+
+
+            // =================================================
+            // PAUSA
+            // =================================================
+
+            if (
+                key === "p"
+            ) {
 
                 game.paused =
                     !game.paused;
 
+
                 showMessage(
+
                     game.paused
-                        ? "Juego pausado"
-                        : "Juego continuado"
+
+                        ? "⏸️ Juego pausado"
+
+                        : "▶️ Juego continuado"
+
                 );
+
+
+                return;
+
             }
 
 
-            // --------------------------
-            // B = bailar
-            // --------------------------
+            // =================================================
+            // BAILAR
+            // =================================================
 
-            if (key === "b") {
+            if (
+                key === "b"
+            ) {
+
+                if (
+                    game.paused
+                ) {
+
+                    return;
+
+                }
+
 
                 const dancing =
                     toggleDance();
 
-                showMessage(
+
+                if (
                     dancing
-                        ? "💃 ¡Estás bailando!"
-                        : "Terminaste de bailar."
-                );
-            }
-
-
-            // --------------------------
-            // E = interactuar
-            // --------------------------
-
-            if (key === "e") {
-
-                interact();
-            }
-
-
-            // --------------------------
-            // G = guardar
-            // --------------------------
-
-            if (key === "g") {
-
-                if (saveGame()) {
+                ) {
 
                     showMessage(
-                        "💾 Partida guardada."
+                        "💃 ¡BACHATA! Sigue el ritmo..."
                     );
+
+                } else {
+
+                    showMessage(
+                        "🕺 Dejaste de bailar."
+                    );
+
                 }
+
+
+                return;
+
             }
 
 
-            // --------------------------
-            // L = cargar
-            // --------------------------
+            // =================================================
+            // TRABAJAR
+            // =================================================
 
-            if (key === "l") {
+            if (
+                key === "t"
+            ) {
 
-                if (loadGame()) {
+                if (
+                    game.paused
+                ) {
+
+                    return;
+
+                }
+
+
+                beginWork();
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // TERMINAR TRABAJO
+            // =================================================
+
+            if (
+                key === "f"
+            ) {
+
+                if (
+                    game.paused
+                ) {
+
+                    return;
+
+                }
+
+
+                endWork();
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // INTERACTUAR
+            // =================================================
+
+            if (
+                key === "e"
+            ) {
+
+                if (
+                    game.paused
+                ) {
+
+                    return;
+
+                }
+
+
+                interact();
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // GUARDAR
+            // =================================================
+
+            if (
+                key === "g"
+            ) {
+
+                if (
+                    saveGame()
+                ) {
+
+                    showMessage(
+                        "💾 Partida guardada correctamente."
+                    );
+
+                } else {
+
+                    showMessage(
+                        "❌ No se pudo guardar."
+                    );
+
+                }
+
+
+                return;
+
+            }
+
+
+            // =================================================
+            // CARGAR
+            // =================================================
+
+            if (
+                key === "l"
+            ) {
+
+                if (
+                    loadGame()
+                ) {
 
                     showMessage(
                         "📂 Partida cargada."
                     );
 
+
                     updateWorldState();
+
+                } else {
+
+                    showMessage(
+                        "❌ No hay partida guardada."
+                    );
+
                 }
+
+
+                return;
+
             }
+
         }
     );
 
@@ -222,9 +429,13 @@ function setupKeyboard() {
             const key =
                 event.key.toLowerCase();
 
-            game.keys[key] = false;
+
+            game.keys[key] =
+                false;
+
         }
     );
+
 }
 
 
@@ -232,25 +443,37 @@ function setupKeyboard() {
 // ACTUALIZAR JUEGO
 // ============================================================
 
-export function update(delta = 1) {
+export function update(
+    delta = 1
+) {
 
-    if (!game.running) {
+    if (
+        !game.running
+    ) {
+
         return;
+
     }
 
-    if (game.paused) {
+
+    if (
+        game.paused
+    ) {
+
         return;
+
     }
 
 
-    // --------------------------
-    // Jugador
-    // --------------------------
+    // ========================================================
+    // JUGADOR
+    // ========================================================
 
     movePlayer(
         game.keys,
         delta
     );
+
 
     limitPlayer(
         WORLD.width,
@@ -258,37 +481,72 @@ export function update(delta = 1) {
     );
 
 
-    // --------------------------
-    // NPCs
-    // --------------------------
+    // ========================================================
+    // BAILE
+    // ========================================================
 
-    updateNPCs(delta);
-
-
-    // --------------------------
-    // Tiempo
-    // --------------------------
-
-    updateTime(delta);
+    updateDance(
+        delta
+    );
 
 
-    // --------------------------
-    // Mundo
-    // --------------------------
+    // ========================================================
+    // TRABAJO
+    // ========================================================
+
+    const workResult =
+        updateWork(
+            delta
+        );
+
+
+    if (
+        workResult &&
+        workResult.success
+    ) {
+
+        showMessage(
+            workResult.message
+        );
+
+    }
+
+
+    // ========================================================
+    // NPCS
+    // ========================================================
+
+    updateNPCs(
+        delta
+    );
+
+
+    // ========================================================
+    // TIEMPO
+    // ========================================================
+
+    updateTime(
+        delta
+    );
+
+
+    // ========================================================
+    // MUNDO
+    // ========================================================
 
     updateWorldState();
 
 
-    // --------------------------
-    // Cámara
-    // --------------------------
+    // ========================================================
+    // CÁMARA
+    // ========================================================
 
     updateCamera();
 
 
-    // --------------------------
-    // Mensajes
-    // --------------------------
+    // ========================================================
+    // MENSAJES
+    // ========================================================
 
     if (
         game.messageTimer > 0
@@ -296,18 +554,32 @@ export function update(delta = 1) {
 
         game.messageTimer -=
             delta;
+
+
+        if (
+            game.messageTimer < 0
+        ) {
+
+            game.messageTimer = 0;
+
+        }
+
     }
+
 }
 
 
 // ============================================================
-// TIEMPO DEL JUEGO
+// TIEMPO
 // ============================================================
 
-function updateTime(delta) {
+function updateTime(
+    delta
+) {
 
     game.time.minute +=
         delta * 0.4;
+
 
     if (
         game.time.minute >= 60
@@ -316,6 +588,7 @@ function updateTime(delta) {
         game.time.minute = 0;
 
         game.time.hour++;
+
     }
 
 
@@ -326,6 +599,7 @@ function updateTime(delta) {
         game.time.hour = 0;
 
         game.time.day++;
+
     }
 
 
@@ -336,6 +610,7 @@ function updateTime(delta) {
         game.time.day = 1;
 
         game.time.month++;
+
     }
 
 
@@ -346,7 +621,9 @@ function updateTime(delta) {
         game.time.month = 1;
 
         game.time.year++;
+
     }
+
 }
 
 
@@ -377,6 +654,7 @@ function updateWorldState() {
             player.y,
             120
         );
+
 }
 
 
@@ -388,6 +666,7 @@ function updateCamera() {
 
     game.camera.x =
         player.x - 400;
+
 
     game.camera.y =
         player.y - 300;
@@ -411,60 +690,72 @@ function updateCamera() {
                 game.camera.y
             )
         );
+
 }
 
 
 // ============================================================
-// INTERACCIONES
+// INTERACTUAR
 // ============================================================
 
 export function interact() {
 
-    // --------------------------
+    // --------------------------------------------------------
     // NPC
-    // --------------------------
+    // --------------------------------------------------------
 
-    if (game.nearbyNPC) {
+    if (
+        game.nearbyNPC
+    ) {
 
         const npc =
             game.nearbyNPC;
 
+
         const dialogue =
-            getDialogue(npc);
+            getDialogue(
+                npc
+            );
+
 
         changeRelationship(
             npc,
             1
         );
 
+
         showMessage(
-            `${npc.name}: "${dialogue}"`
+            `👤 ${npc.name}: "${dialogue}"`
         );
 
+
         return;
+
     }
 
 
-    // --------------------------
-    // Lugar
-    // --------------------------
+    // --------------------------------------------------------
+    // LUGAR
+    // --------------------------------------------------------
 
-    if (game.currentLocation) {
-
-        const location =
-            game.currentLocation;
+    if (
+        game.currentLocation
+    ) {
 
         interactWithLocation(
-            location
+            game.currentLocation
         );
 
+
         return;
+
     }
 
 
     showMessage(
-        "No hay nada con lo que puedas interactuar."
+        "No hay nada cerca con lo que puedas interactuar."
     );
+
 }
 
 
@@ -492,7 +783,7 @@ function interactWithLocation(
         case "shop":
 
             showMessage(
-                "🛒 Puedes comprar productos en el colmado."
+                "🛒 Este es un colmado. Aquí puedes comprar comida."
             );
 
             break;
@@ -501,7 +792,7 @@ function interactWithLocation(
         case "barber":
 
             showMessage(
-                "💈 Aquí puedes trabajar como barbero."
+                "💈 BARBERÍA — Pulsa T para comenzar a trabajar como barbero."
             );
 
             break;
@@ -510,7 +801,7 @@ function interactWithLocation(
         case "school":
 
             showMessage(
-                "📚 Aquí puedes estudiar."
+                "📚 ESCUELA — Aquí puedes estudiar."
             );
 
             break;
@@ -519,7 +810,7 @@ function interactWithLocation(
         case "club":
 
             showMessage(
-                "🎵 Esta noche hay música y baile."
+                "🎵 CLUB — Aquí puedes bailar bachata y trabajar como músico."
             );
 
             break;
@@ -528,7 +819,7 @@ function interactWithLocation(
         case "market":
 
             showMessage(
-                "🛒 Puedes buscar trabajo como empacador."
+                "🛒 MERCADO — Pulsa T para trabajar como empacador."
             );
 
             break;
@@ -537,7 +828,7 @@ function interactWithLocation(
         case "transport":
 
             showMessage(
-                "🚕 Aquí trabajan los choferes de concho."
+                "🚕 PARADA DE CONCHOS — Pulsa T para trabajar como chofer."
             );
 
             break;
@@ -546,7 +837,7 @@ function interactWithLocation(
         case "sports":
 
             showMessage(
-                "⚾ Aquí puedes jugar béisbol."
+                "⚾ Puedes jugar béisbol aquí."
             );
 
             break;
@@ -555,7 +846,7 @@ function interactWithLocation(
         case "farm":
 
             showMessage(
-                "🌾 Aquí puedes trabajar en el campo."
+                "🌾 FINCA — Pulsa T para trabajar como agricultor."
             );
 
             break;
@@ -575,7 +866,9 @@ function interactWithLocation(
             showMessage(
                 location.name
             );
+
     }
+
 }
 
 
@@ -587,31 +880,177 @@ export function chooseJob(
     jobId
 ) {
 
-    const success =
-        getJob(jobId);
-
-    if (!success) {
-
-        showMessage(
-            "Ese trabajo no existe."
+    const result =
+        getJob(
+            jobId
         );
 
+
+    if (
+        !result.success
+    ) {
+
+        showMessage(
+            result.message
+        );
+
+
         return false;
+
     }
 
-    const job =
-        jobs[jobId];
 
     showMessage(
-        `💼 Ahora trabajas como ${job.name}.`
+        result.message
     );
 
+
     return true;
+
 }
 
 
 // ============================================================
-// TRABAJAR
+// COMENZAR TRABAJO
+// ============================================================
+
+export function beginWork() {
+
+    /*
+     * Si estamos cerca de un lugar de trabajo,
+     * automáticamente seleccionamos el trabajo.
+     */
+
+    if (
+        game.currentLocation
+    ) {
+
+        const type =
+            game.currentLocation.type;
+
+
+        let jobId =
+            null;
+
+
+        // Barbería
+
+        if (
+            type === "barber"
+        ) {
+
+            jobId =
+                "barber";
+
+        }
+
+
+        // Transporte
+
+        else if (
+            type === "transport"
+        ) {
+
+            jobId =
+                "taxi";
+
+        }
+
+
+        // Mercado
+
+        else if (
+            type === "market"
+        ) {
+
+            jobId =
+                "supermarket";
+
+        }
+
+
+        // Finca
+
+        else if (
+            type === "farm"
+        ) {
+
+            jobId =
+                "farmer";
+
+        }
+
+
+        // Club
+
+        else if (
+            type === "club"
+        ) {
+
+            jobId =
+                "musician";
+
+        }
+
+
+        /*
+         * Si encontramos un trabajo,
+         * lo asignamos.
+         */
+
+        if (
+            jobId
+        ) {
+
+            getJob(
+                jobId
+            );
+
+        }
+
+    }
+
+
+    /*
+     * Si no hay trabajo seleccionado,
+     * avisar.
+     */
+
+    if (
+        workState.currentJob ===
+        "unemployed"
+    ) {
+
+        showMessage(
+            "💼 Acércate a una barbería, mercado, finca, club o parada de concho y pulsa T."
+        );
+
+
+        return {
+
+            success: false
+
+        };
+
+    }
+
+
+    const result =
+        startWork();
+
+
+    showMessage(
+        result.message
+    );
+
+
+    return result;
+
+}
+
+
+// ============================================================
+// TRABAJAR MANUALMENTE
 // ============================================================
 
 export function workPlayer(
@@ -619,30 +1058,18 @@ export function workPlayer(
 ) {
 
     const result =
-        work(hours);
+        work(
+            hours
+        );
+
 
     showMessage(
         result.message
     );
 
-    return result;
-}
-
-
-// ============================================================
-// INICIAR TRABAJO
-// ============================================================
-
-export function beginWork() {
-
-    const result =
-        startWork();
-
-    showMessage(
-        result.message
-    );
 
     return result;
+
 }
 
 
@@ -652,14 +1079,35 @@ export function beginWork() {
 
 export function endWork() {
 
+    if (
+        !workState.working
+    ) {
+
+        showMessage(
+            "❌ No estás trabajando."
+        );
+
+
+        return {
+
+            success: false
+
+        };
+
+    }
+
+
     const result =
         finishWork();
 
+
     showMessage(
-        `Terminaste tu jornada. Ganaste $${result.earned}.`
+        `🏁 Terminaste tu jornada. Ganaste $${result.earned}.`
     );
 
+
     return result;
+
 }
 
 
@@ -668,23 +1116,32 @@ export function endWork() {
 // ============================================================
 
 export function showMessage(
-    message
+    message,
+    duration = 7
 ) {
 
     game.message =
         message;
 
+
+    /*
+     * Ahora los mensajes duran
+     * 7 segundos.
+     */
+
     game.messageTimer =
-        5;
+        duration;
+
 
     console.log(
         message
     );
+
 }
 
 
 // ============================================================
-// INFORMACIÓN DEL JUEGO
+// ESTADO DEL JUEGO
 // ============================================================
 
 export function getGameState() {
@@ -692,42 +1149,70 @@ export function getGameState() {
     return {
 
         player: {
-            x: player.x,
-            y: player.y,
-            money: player.money,
-            energy: player.energy,
-            hunger: player.hunger,
-            job: player.job
+
+            x:
+                player.x,
+
+            y:
+                player.y,
+
+            money:
+                player.money,
+
+            energy:
+                player.energy,
+
+            hunger:
+                player.hunger,
+
+            job:
+                player.job,
+
+            working:
+                player.working,
+
+            dancing:
+                player.dancing
+
         },
 
+
         time: {
+
             ...game.time
+
         },
+
 
         region:
             game.currentRegion?.name ||
             "Desconocida",
 
+
         location:
             game.currentLocation?.name ||
             null,
 
+
         nearbyNPC:
             game.nearbyNPC?.name ||
             null
+
     };
+
 }
 
 
 // ============================================================
-// EXPORTAR DATOS DEL MUNDO
+// DATOS DEL MUNDO
 // ============================================================
 
 export function getWorldData() {
 
     return {
 
-        world: WORLD,
+        world:
+            WORLD,
 
         regions,
 
@@ -740,6 +1225,7 @@ export function getWorldData() {
         npcs,
 
         jobs
-    };
-}
 
+    };
+
+}
