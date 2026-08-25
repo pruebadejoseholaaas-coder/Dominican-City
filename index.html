@@ -1,2400 +1,1388 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dominican City — Versión 2</title>
 
-<style>
-* {
-    box-sizing: border-box;
-}
+    <meta charset="UTF-8">
 
-html,
-body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #101820;
-    font-family: Arial, Helvetica, sans-serif;
-    color: white;
-}
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-canvas {
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    image-rendering: pixelated;
-}
+    <title>Dominican City 🇩🇴</title>
 
-#hud {
-    position: fixed;
-    top: 14px;
-    left: 14px;
-    z-index: 20;
-    width: 310px;
-    padding: 15px;
-    border-radius: 14px;
-    background: rgba(12, 18, 24, .90);
-    border: 1px solid rgba(255,255,255,.16);
-    box-shadow: 0 12px 40px rgba(0,0,0,.35);
-    backdrop-filter: blur(8px);
-}
+    <style>
 
-#hud h1 {
-    margin: 0 0 10px;
-    color: #ffd166;
-    font-size: 20px;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-.row {
-    display: flex;
-    justify-content: space-between;
-    margin: 5px 0;
-    font-size: 13px;
-}
+        html,
+        body {
+            margin: 0;
+            padding: 0;
 
-.bar {
-    height: 7px;
-    background: #263238;
-    border-radius: 10px;
-    overflow: hidden;
-    margin: 3px 0 7px;
-}
+            width: 100%;
+            height: 100%;
 
-.fill {
-    height: 100%;
-    transition: width .2s;
-}
+            overflow: hidden;
 
-.health {
-    background: #e63946;
-}
+            background: #101820;
 
-.energy {
-    background: #06d6a0;
-}
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
 
-.hunger {
-    background: #f4a261;
-}
+            color: white;
+        }
 
-#clock {
-    color: #90e0ef;
-}
 
-#money {
-    color: #ffd166;
-    font-weight: bold;
-}
+        /* ==================================================
+           JUEGO
+        ================================================== */
 
-#location {
-    color: #90be6d;
-}
+        #game {
 
-#help {
-    position: fixed;
-    bottom: 15px;
-    left: 15px;
-    z-index: 20;
-    padding: 11px 14px;
-    border-radius: 12px;
-    background: rgba(12,18,24,.88);
-    font-size: 12px;
-    line-height: 1.8;
-}
+            position: relative;
 
-.key {
-    display: inline-block;
-    min-width: 22px;
-    padding: 1px 5px;
-    margin-right: 2px;
-    border-radius: 4px;
-    background: #37474f;
-    text-align: center;
-    font-weight: bold;
-}
+            width: 100vw;
+            height: 100vh;
 
-#rightPanel {
-    position: fixed;
-    right: 15px;
-    top: 15px;
-    z-index: 20;
-    width: 270px;
-    padding: 15px;
-    border-radius: 14px;
-    background: rgba(12,18,24,.88);
-    border: 1px solid rgba(255,255,255,.14);
-}
+            overflow: hidden;
 
-#rightPanel h2 {
-    margin: 0 0 8px;
-    color: #ffd166;
-    font-size: 16px;
-}
+            background:
+                linear-gradient(
+                    #78b7e8 0%,
+                    #a9d6f5 45%,
+                    #76a85b 46%,
+                    #60934b 100%
+                );
+        }
 
-#rightPanel p {
-    margin: 6px 0;
-    font-size: 13px;
-    color: #d8dee3;
-    line-height: 1.45;
-}
 
-#era {
-    position: fixed;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 25;
-    padding: 8px 16px;
-    border-radius: 20px;
-    background: rgba(0,0,0,.72);
-    font-size: 13px;
-}
+        /* ==================================================
+           MUNDO
+        ================================================== */
 
-#notification {
-    position: fixed;
-    left: 50%;
-    bottom: 80px;
-    transform: translateX(-50%);
-    z-index: 100;
-    padding: 12px 20px;
-    border-radius: 10px;
-    background: rgba(0,0,0,.9);
-    border: 1px solid rgba(255,255,255,.15);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .25s;
-}
+        #world {
 
-#notification.show {
-    opacity: 1;
-}
+            position: absolute;
 
-#dialog {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 200;
-    width: min(520px, 90vw);
-    padding: 24px;
-    border-radius: 16px;
-    background: rgba(9,15,20,.97);
-    border: 1px solid rgba(255,255,255,.2);
-    box-shadow: 0 25px 80px rgba(0,0,0,.6);
-    display: none;
-}
+            width: 6000px;
+            height: 4000px;
 
-#dialog.active {
-    display: block;
-}
+            left: 0;
+            top: 0;
 
-#dialog h2 {
-    margin-top: 0;
-    color: #ffd166;
-}
+            transform:
+                translate(
+                    0px,
+                    0px
+                );
 
-#dialog p {
-    color: #d7dee4;
-    line-height: 1.6;
-}
+            transform-origin:
+                top left;
+        }
 
-button {
-    border: 0;
-    padding: 10px 16px;
-    border-radius: 8px;
-    background: #ffd166;
-    cursor: pointer;
-    font-weight: bold;
-}
 
-button:hover {
-    background: #ffe08a;
-}
+        /* ==================================================
+           TERRENO
+        ================================================== */
 
-#toastIcon {
-    margin-right: 5px;
-}
+        .region {
 
-@media (max-width: 800px) {
-    #rightPanel {
-        display: none;
-    }
+            position: absolute;
 
-    #hud {
-        width: 250px;
-        transform: scale(.86);
-        transform-origin: top left;
-    }
+            border:
+                2px solid
+                rgba(0,0,0,0.12);
 
-    #help {
-        font-size: 10px;
-    }
-}
-</style>
+            border-radius: 10px;
+        }
+
+
+        .region-city {
+
+            background:
+                #7fa85b;
+        }
+
+
+        .region-rural {
+
+            background:
+                #6d9d58;
+        }
+
+
+        /* ==================================================
+           CARRETERAS
+        ================================================== */
+
+        .road {
+
+            position: absolute;
+
+            background:
+                #555;
+
+            border:
+                3px solid
+                #333;
+        }
+
+
+        .road::after {
+
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            top: 50%;
+
+            width: 100%;
+            height: 5px;
+
+            transform:
+                translateY(-50%);
+
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    #f6d365 0px,
+                    #f6d365 40px,
+                    transparent 40px,
+                    transparent 80px
+                );
+        }
+
+
+        /* ==================================================
+           EDIFICIOS
+        ================================================== */
+
+        .location {
+
+            position: absolute;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+
+            color: white;
+
+            font-weight: bold;
+
+            font-size: 15px;
+
+            border:
+                3px solid
+                rgba(0,0,0,0.35);
+
+            border-radius: 8px;
+
+            box-shadow:
+                0 5px 12px
+                rgba(0,0,0,0.25);
+
+            text-shadow:
+                1px 1px 2px black;
+
+            cursor: default;
+        }
+
+
+        .house {
+            background: #c77b45;
+        }
+
+        .shop {
+            background: #d39b35;
+        }
+
+        .barber {
+            background: #4169a1;
+        }
+
+        .school {
+            background: #d6c08d;
+            color: #222;
+            text-shadow: none;
+        }
+
+        .club {
+            background: #753c7d;
+        }
+
+        .market {
+            background: #ad573e;
+        }
+
+        .transport {
+            background: #3c3c3c;
+        }
+
+        .sports {
+            background: #427c3b;
+        }
+
+        .farm {
+            background: #8a6b3d;
+        }
+
+        .beach {
+            background: #29a9c9;
+        }
+
+
+        /* ==================================================
+           ÁRBOLES
+        ================================================== */
+
+        .tree {
+
+            position: absolute;
+
+            width: 32px;
+            height: 32px;
+
+            border-radius: 50%;
+
+            background:
+                #286b32;
+
+            border:
+                3px solid
+                #17451f;
+
+            box-shadow:
+                0 8px 0
+                #70452a;
+        }
+
+
+        /* ==================================================
+           NPC
+        ================================================== */
+
+        .npc {
+
+            position: absolute;
+
+            width: 34px;
+            height: 48px;
+
+            border-radius:
+                50% 50% 35% 35%;
+
+            border:
+                3px solid
+                rgba(0,0,0,0.45);
+
+            box-shadow:
+                0 3px 6px
+                rgba(0,0,0,0.35);
+
+            z-index: 20;
+        }
+
+
+        .npc::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 18px;
+            height: 18px;
+
+            left: 5px;
+            top: -11px;
+
+            border-radius: 50%;
+
+            background: #8d5524;
+
+            border:
+                2px solid
+                #4d2d16;
+        }
+
+
+        /* ==================================================
+           JUGADOR
+        ================================================== */
+
+        #player {
+
+            position: absolute;
+
+            width: 42px;
+            height: 58px;
+
+            z-index: 100;
+
+            border:
+                4px solid
+                #111;
+
+            border-radius:
+                50% 50% 30% 30%;
+
+            background:
+                #d62828;
+
+            box-shadow:
+                0 5px 12px
+                rgba(0,0,0,0.5);
+        }
+
+
+        #player::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 23px;
+            height: 23px;
+
+            left: 5px;
+            top: -15px;
+
+            border-radius: 50%;
+
+            background:
+                #8d5524;
+
+            border:
+                3px solid
+                #4d2d16;
+        }
+
+
+        /* ==================================================
+           INTERFAZ
+        ================================================== */
+
+        #hud {
+
+            position: fixed;
+
+            left: 15px;
+            top: 15px;
+
+            z-index: 1000;
+
+            width: 285px;
+
+            padding: 15px;
+
+            border-radius: 14px;
+
+            background:
+                rgba(10, 15, 20, 0.88);
+
+            border:
+                2px solid
+                rgba(255,255,255,0.2);
+
+            box-shadow:
+                0 8px 25px
+                rgba(0,0,0,0.35);
+        }
+
+
+        #hud h1 {
+
+            margin:
+                0 0 8px 0;
+
+            font-size: 21px;
+
+            color:
+                #f7d046;
+        }
+
+
+        .stat {
+
+            margin:
+                7px 0;
+        }
+
+
+        .bar {
+
+            width: 100%;
+            height: 9px;
+
+            margin-top: 3px;
+
+            overflow: hidden;
+
+            border-radius: 20px;
+
+            background:
+                #333;
+        }
+
+
+        .bar-fill {
+
+            height: 100%;
+
+            width: 100%;
+
+            transition:
+                width 0.2s;
+        }
+
+
+        #healthFill {
+            background: #e63946;
+        }
+
+        #energyFill {
+            background: #f1c40f;
+        }
+
+        #hungerFill {
+            background: #2ecc71;
+        }
+
+
+        #time {
+
+            margin-top: 10px;
+
+            padding-top: 10px;
+
+            border-top:
+                1px solid
+                rgba(255,255,255,0.15);
+
+            color:
+                #f7d046;
+        }
+
+
+        /* ==================================================
+           MENSAJE
+        ================================================== */
+
+        #message {
+
+            position: fixed;
+
+            left: 50%;
+
+            bottom: 35px;
+
+            transform:
+                translateX(-50%);
+
+            z-index: 2000;
+
+            max-width: 700px;
+
+            padding:
+                14px 22px;
+
+            border-radius: 12px;
+
+            background:
+                rgba(0,0,0,0.85);
+
+            border:
+                2px solid
+                rgba(255,255,255,0.2);
+
+            font-size: 16px;
+
+            text-align: center;
+
+            opacity: 0;
+
+            transition:
+                opacity 0.2s;
+        }
+
+
+        #message.visible {
+            opacity: 1;
+        }
+
+
+        /* ==================================================
+           CONTROLES
+        ================================================== */
+
+        #controls {
+
+            position: fixed;
+
+            right: 15px;
+            bottom: 15px;
+
+            z-index: 1000;
+
+            padding: 13px;
+
+            max-width: 260px;
+
+            border-radius: 12px;
+
+            background:
+                rgba(10,15,20,0.85);
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+
+        #controls strong {
+
+            color:
+                #f7d046;
+        }
+
+
+        /* ==================================================
+           MINIMAPA
+        ================================================== */
+
+        #minimap {
+
+            position: fixed;
+
+            right: 15px;
+            top: 15px;
+
+            width: 190px;
+            height: 125px;
+
+            z-index: 1000;
+
+            border:
+                3px solid
+                rgba(255,255,255,0.7);
+
+            border-radius: 10px;
+
+            background:
+                #60934b;
+
+            overflow: hidden;
+        }
+
+
+        #miniPlayer {
+
+            position: absolute;
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background:
+                red;
+
+            border:
+                1px solid
+                white;
+        }
+
+
+        /* ==================================================
+           PAUSA
+        ================================================== */
+
+        #paused {
+
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 3000;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                rgba(0,0,0,0.7);
+
+            font-size: 42px;
+
+            font-weight: bold;
+        }
+
+
+        #paused.visible {
+
+            display: flex;
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
-<canvas id="game"></canvas>
 
-<div id="era">
-    🇩🇴 Dominican City · Año <span id="year">1965</span> ·
-    <span id="clock">08:00</span>
+<div id="game">
+
+
+    <!-- ================================================
+         MUNDO
+    ================================================= -->
+
+    <div id="world">
+
+        <div id="regions"></div>
+
+        <div id="roads"></div>
+
+        <div id="locations"></div>
+
+        <div id="trees"></div>
+
+        <div id="npcs"></div>
+
+        <div id="player"></div>
+
+    </div>
+
+
+    <!-- ================================================
+         HUD
+    ================================================= -->
+
+    <div id="hud">
+
+        <h1>
+            🇩🇴 Dominican City
+        </h1>
+
+        <div>
+            <strong id="playerName">
+                José
+            </strong>
+        </div>
+
+        <div class="stat">
+            💰 Dinero:
+            $<span id="money">25</span>
+        </div>
+
+        <div class="stat">
+
+            ❤️ Salud
+
+            <div class="bar">
+                <div
+                    id="healthFill"
+                    class="bar-fill">
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            ⚡ Energía
+
+            <div class="bar">
+                <div
+                    id="energyFill"
+                    class="bar-fill">
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            🍗 Hambre
+
+            <div class="bar">
+                <div
+                    id="hungerFill"
+                    class="bar-fill">
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            💼 Trabajo:
+            <span id="job">
+                Desempleado
+            </span>
+
+        </div>
+
+
+        <div id="time">
+
+            🕐
+            <span id="clock">
+                08:00
+            </span>
+
+            |
+
+            📅
+            <span id="date">
+                1/1/1965
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================
+         MINIMAPA
+    ================================================= -->
+
+    <div id="minimap">
+
+        <div id="miniPlayer"></div>
+
+    </div>
+
+
+    <!-- ================================================
+         CONTROLES
+    ================================================= -->
+
+    <div id="controls">
+
+        <strong>CONTROLES</strong>
+
+        <br>
+
+        W A S D / Flechas
+        → Moverse
+
+        <br>
+
+        E → Interactuar
+
+        <br>
+
+        B → Bailar 💃
+
+        <br>
+
+        G → Guardar 💾
+
+        <br>
+
+        L → Cargar
+
+        <br>
+
+        P → Pausa
+
+    </div>
+
+
+    <!-- ================================================
+         MENSAJES
+    ================================================= -->
+
+    <div id="message"></div>
+
+
+    <!-- ================================================
+         PAUSA
+    ================================================= -->
+
+    <div id="paused">
+
+        PAUSA
+
+    </div>
+
+
 </div>
 
-<div id="hud">
 
-    <h1>🇩🇴 Dominican City</h1>
+<script type="module">
 
-    <div class="row">
-        <span>Nombre</span>
-        <strong id="playerName">José</strong>
-    </div>
+import {
+    player
+} from "./game/player.js";
 
-    <div class="row">
-        <span>Trabajo</span>
-        <strong id="job">Desempleado</strong>
-    </div>
 
-    <div class="row">
-        <span>Dinero</span>
-        <strong id="money">$25</strong>
-    </div>
+import {
+    WORLD,
+    regions,
+    roads,
+    locations,
+    trees
+} from "./game/world.js";
 
-    <div class="row">
-        <span>Salud</span>
-        <span id="healthText">100</span>
-    </div>
 
-    <div class="bar">
-        <div id="healthBar" class="fill health" style="width:100%"></div>
-    </div>
+import {
+    npcs
+} from "./game/npcs.js";
 
-    <div class="row">
-        <span>Energía</span>
-        <span id="energyText">100</span>
-    </div>
 
-    <div class="bar">
-        <div id="energyBar" class="fill energy" style="width:100%"></div>
-    </div>
+import {
+    startGame,
+    update,
+    game
+} from "./game/game.js";
 
-    <div class="row">
-        <span>Hambre</span>
-        <span id="hungerText">100</span>
-    </div>
 
-    <div class="bar">
-        <div id="hungerBar" class="fill hunger" style="width:100%"></div>
-    </div>
+/* ======================================================
+   ELEMENTOS
+====================================================== */
 
-    <div class="row">
-        <span>Familia</span>
-        <span id="familyMood">Contenta</span>
-    </div>
+const world =
+    document.getElementById(
+        "world"
+    );
 
-</div>
+const playerElement =
+    document.getElementById(
+        "player"
+    );
 
-<div id="rightPanel">
+const regionsElement =
+    document.getElementById(
+        "regions"
+    );
 
-    <h2>📍 Información</h2>
+const roadsElement =
+    document.getElementById(
+        "roads"
+    );
 
-    <p>
-        Lugar:
-        <strong id="location">Barrio Los Almendros</strong>
-    </p>
+const locationsElement =
+    document.getElementById(
+        "locations"
+    );
 
-    <p>
-        Actividad:
-        <span id="activity">Explorando el barrio.</span>
-    </p>
+const treesElement =
+    document.getElementById(
+        "trees"
+    );
 
-    <p>
-        Estado:
-        <span id="status">Libre</span>
-    </p>
+const npcsElement =
+    document.getElementById(
+        "npcs"
+    );
 
-</div>
+const messageElement =
+    document.getElementById(
+        "message"
+    );
 
-<div id="help">
+const pausedElement =
+    document.getElementById(
+        "paused"
+    );
 
-    <span class="key">W</span>
-    <span class="key">A</span>
-    <span class="key">S</span>
-    <span class="key">D</span>
-    mover
 
-    &nbsp;
+/* ======================================================
+   CREAR REGIONES
+====================================================== */
 
-    <span class="key">E</span>
-    interactuar
+function createRegions() {
 
-    <br>
+    regionsElement.innerHTML = "";
 
-    <span class="key">B</span>
-    bailar
+    for (
+        const region
+        of regions
+    ) {
 
-    &nbsp;
+        const element =
+            document.createElement(
+                "div"
+            );
 
-    <span class="key">F</span>
-    trabajar
+        element.className =
+            `region region-${region.type}`;
 
-    &nbsp;
+        element.style.left =
+            region.x + "px";
 
-    <span class="key">H</span>
-    casa
+        element.style.top =
+            region.y + "px";
 
-    &nbsp;
+        element.style.width =
+            region.width + "px";
 
-    <span class="key">R</span>
-    descansar
+        element.style.height =
+            region.height + "px";
 
-</div>
-
-<div id="notification">
-    <span id="toastIcon">🇩🇴</span>
-    <span id="notificationText"></span>
-</div>
-
-<div id="dialog">
-
-    <h2 id="dialogTitle">Dominican City</h2>
-
-    <p id="dialogText"></p>
-
-    <button onclick="closeDialog()">
-        Continuar
-    </button>
-
-</div>
-
-<script>
-
-/* ============================================================
-   DOMINICAN CITY — VERSIÓN 2
-   Mundo 2D
-   ============================================================ */
-
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-
-let W = window.innerWidth;
-let H = window.innerHeight;
-
-canvas.width = W;
-canvas.height = H;
-
-ctx.imageSmoothingEnabled = false;
-
-window.addEventListener("resize", () => {
-    W = window.innerWidth;
-    H = window.innerHeight;
-
-    canvas.width = W;
-    canvas.height = H;
-
-    ctx.imageSmoothingEnabled = false;
-});
-
-
-/* ============================================================
-   MUNDO
-   ============================================================ */
-
-const WORLD = {
-    width: 3600,
-    height: 2400
-};
-
-
-/* ============================================================
-   JUGADOR
-   ============================================================ */
-
-const player = {
-
-    x: 850,
-    y: 720,
-
-    speed: 3.2,
-
-    name: "José",
-
-    health: 100,
-    energy: 100,
-    hunger: 100,
-
-    money: 25,
-
-    job: "Desempleado",
-
-    dancing: false,
-
-    sleeping: false,
-
-    direction: "down"
-};
-
-
-/* ============================================================
-   FAMILIA
-   ============================================================ */
-
-const family = {
-
-    mother: {
-        name: "Doña Carmen",
-        relation: "Madre",
-        mood: 80
-    },
-
-    father: {
-        name: "Don Rafael",
-        relation: "Padre",
-        mood: 75
-    },
-
-    sister: {
-        name: "Ana",
-        relation: "Hermana",
-        mood: 85
-    }
-};
-
-
-/* ============================================================
-   TIEMPO
-   ============================================================ */
-
-const worldTime = {
-
-    year: 1965,
-
-    hour: 8,
-
-    minute: 0,
-
-    speed: .018
-};
-
-
-/* ============================================================
-   CÁMARA
-   ============================================================ */
-
-const camera = {
-    x: 0,
-    y: 0
-};
-
-
-/* ============================================================
-   TECLADO
-   ============================================================ */
-
-const keys = {};
-
-window.addEventListener("keydown", event => {
-
-    const key = event.key.toLowerCase();
-
-    keys[key] = true;
-
-    if (key === "e") {
-        interact();
-    }
-
-    if (key === "b") {
-        dance();
-    }
-
-    if (key === "f") {
-        work();
-    }
-
-    if (key === "h") {
-        goHome();
-    }
-
-    if (key === "r") {
-        rest();
-    }
-});
-
-window.addEventListener("keyup", event => {
-
-    keys[event.key.toLowerCase()] = false;
-
-});
-
-
-/* ============================================================
-   EDIFICIOS
-   ============================================================ */
-
-const buildings = [
-
-    {
-        id: "home",
-        name: "Casa Familiar",
-        type: "house",
-        x: 400,
-        y: 420,
-        width: 320,
-        height: 230,
-        color: "#d99b5e"
-    },
-
-    {
-        id: "colmado",
-        name: "Colmado Don Pepe",
-        type: "shop",
-        x: 1000,
-        y: 300,
-        width: 260,
-        height: 190,
-        color: "#d4a72c"
-    },
-
-    {
-        id: "barber",
-        name: "Barbería El Barrio",
-        type: "barber",
-        x: 1450,
-        y: 330,
-        width: 260,
-        height: 190,
-        color: "#8d5524"
-    },
-
-    {
-        id: "school",
-        name: "Escuela Primaria",
-        type: "school",
-        x: 2050,
-        y: 320,
-        width: 330,
-        height: 220,
-        color: "#d66b4d"
-    },
-
-    {
-        id: "club",
-        name: "Club Social",
-        type: "club",
-        x: 2700,
-        y: 400,
-        width: 330,
-        height: 220,
-        color: "#8257a6"
-    },
-
-    {
-        id: "market",
-        name: "Supermercado",
-        type: "market",
-        x: 1450,
-        y: 1150,
-        width: 340,
-        height: 230,
-        color: "#4f86a6"
-    },
-
-    {
-        id: "bus",
-        name: "Parada de Conchos",
-        type: "bus",
-        x: 2250,
-        y: 1200,
-        width: 280,
-        height: 150,
-        color: "#555"
-    }
-];
-
-
-/* ============================================================
-   NPCS
-   ============================================================ */
-
-const npcs = [
-
-    {
-        name: "Doña Carmen",
-        role: "Madre",
-        x: 540,
-        y: 540,
-        color: "#b56576",
-        home: true,
-        speed: .3
-    },
-
-    {
-        name: "Don Rafael",
-        role: "Padre",
-        x: 640,
-        y: 560,
-        color: "#355070",
-        home: true,
-        speed: .35
-    },
-
-    {
-        name: "Ana",
-        role: "Hermana",
-        x: 580,
-        y: 600,
-        color: "#6a994e",
-        home: true,
-        speed: .45
-    },
-
-    {
-        name: "Don Pepe",
-        role: "Comerciante",
-        x: 1120,
-        y: 500,
-        color: "#9c6644",
-        speed: .35
-    },
-
-    {
-        name: "Ramón",
-        role: "Barbero",
-        x: 1560,
-        y: 520,
-        color: "#4361ee",
-        speed: .35
-    },
-
-    {
-        name: "María",
-        role: "Maestra",
-        x: 2200,
-        y: 550,
-        color: "#f4a261",
-        speed: .3
-    },
-
-    {
-        name: "Pedro",
-        role: "Músico",
-        x: 2800,
-        y: 650,
-        color: "#2a9d8f",
-        speed: .5
-    },
-
-    {
-        name: "Juan",
-        role: "Taxista",
-        x: 2200,
-        y: 1100,
-        color: "#e63946",
-        speed: .4
-    },
-
-    {
-        name: "Miguel",
-        role: "Estudiante",
-        x: 1950,
-        y: 800,
-        color: "#457b9d",
-        speed: .55
-    },
-
-    {
-        name: "Rosa",
-        role: "Cantante",
-        x: 2900,
-        y: 580,
-        color: "#e76f51",
-        speed: .4
-    }
-];
-
-
-/* ============================================================
-   VEHÍCULOS
-   ============================================================ */
-
-const vehicles = [
-
-    {
-        type: "concho",
-        x: -300,
-        y: 900,
-        speed: 1.2,
-        color: "#f1c40f"
-    },
-
-    {
-        type: "concho",
-        x: 900,
-        y: 900,
-        speed: 1.1,
-        color: "#ffffff"
-    },
-
-    {
-        type: "carro publico",
-        x: 1800,
-        y: 900,
-        speed: 1.35,
-        color: "#d9d9d9"
-    },
-
-    {
-        type: "taxi",
-        x: 2800,
-        y: 900,
-        speed: 1.5,
-        color: "#e9c46a"
-    }
-];
-
-
-/* ============================================================
-   CALLES
-   ============================================================ */
-
-const roads = [
-
-    {
-        x: 0,
-        y: 820,
-        width: WORLD.width,
-        height: 170
-    },
-
-    {
-        x: 820,
-        y: 0,
-        width: 180,
-        height: WORLD.height
-    },
-
-    {
-        x: 1800,
-        y: 0,
-        width: 160,
-        height: WORLD.height
-    },
-
-    {
-        x: 0,
-        y: 1450,
-        width: WORLD.width,
-        height: 160
-    }
-];
-
-
-/* ============================================================
-   DECORACIÓN
-   ============================================================ */
-
-const trees = [];
-
-for (let i = 0; i < 90; i++) {
-
-    trees.push({
-
-        x: 80 + Math.random() * (WORLD.width - 160),
-
-        y: 80 + Math.random() * (WORLD.height - 160),
-
-        size: 18 + Math.random() * 20
-    });
-}
-
-
-/* ============================================================
-   FUNCIONES DE TIEMPO
-   ============================================================ */
-
-function updateTime() {
-
-    worldTime.minute += worldTime.speed;
-
-    if (worldTime.minute >= 60) {
-
-        worldTime.minute = 0;
-
-        worldTime.hour++;
-    }
-
-    if (worldTime.hour >= 24) {
-
-        worldTime.hour = 0;
-
-        nextDay();
+        regionsElement.appendChild(
+            element
+        );
     }
 }
 
 
-function nextDay() {
+/* ======================================================
+   CREAR CARRETERAS
+====================================================== */
 
-    player.energy = 100;
+function createRoads() {
 
-    player.hunger = 100;
+    roadsElement.innerHTML = "";
 
-    family.mother.mood = Math.min(
-        100,
-        family.mother.mood + 10
-    );
+    for (
+        const road
+        of roads
+    ) {
 
-    family.father.mood = Math.min(
-        100,
-        family.father.mood + 10
-    );
+        const element =
+            document.createElement(
+                "div"
+            );
 
-    family.sister.mood = Math.min(
-        100,
-        family.sister.mood + 10
-    );
+        element.className =
+            "road";
+
+        element.style.left =
+            road.x + "px";
+
+        element.style.top =
+            road.y + "px";
+
+        element.style.width =
+            road.width + "px";
+
+        element.style.height =
+            road.height + "px";
+
+        roadsElement.appendChild(
+            element
+        );
+    }
 }
 
 
-/* ============================================================
-   MOVIMIENTO
-   ============================================================ */
+/* ======================================================
+   CREAR LUGARES
+====================================================== */
 
-function updatePlayer() {
+function createLocations() {
 
-    if (player.sleeping) {
-        return;
+    locationsElement.innerHTML = "";
+
+    for (
+        const location
+        of locations
+    ) {
+
+        const element =
+            document.createElement(
+                "div"
+            );
+
+        element.className =
+            `location ${location.type}`;
+
+        element.textContent =
+            location.name;
+
+        element.style.left =
+            location.x + "px";
+
+        element.style.top =
+            location.y + "px";
+
+        element.style.width =
+            location.width + "px";
+
+        element.style.height =
+            location.height + "px";
+
+        locationsElement.appendChild(
+            element
+        );
     }
-
-    let dx = 0;
-    let dy = 0;
-
-    if (keys["w"]) {
-        dy -= 1;
-        player.direction = "up";
-    }
-
-    if (keys["s"]) {
-        dy += 1;
-        player.direction = "down";
-    }
-
-    if (keys["a"]) {
-        dx -= 1;
-        player.direction = "left";
-    }
-
-    if (keys["d"]) {
-        dx += 1;
-        player.direction = "right";
-    }
-
-    if (dx !== 0 || dy !== 0) {
-
-        const length =
-            Math.sqrt(dx * dx + dy * dy);
-
-        dx /= length;
-        dy /= length;
-
-        player.x += dx * player.speed;
-        player.y += dy * player.speed;
-
-        player.energy -= .012;
-        player.hunger -= .007;
-    }
-
-    player.x = Math.max(
-        30,
-        Math.min(
-            WORLD.width - 30,
-            player.x
-        )
-    );
-
-    player.y = Math.max(
-        30,
-        Math.min(
-            WORLD.height - 30,
-            player.y
-        )
-    );
 }
 
 
-/* ============================================================
-   NPC
-   ============================================================ */
+/* ======================================================
+   CREAR ÁRBOLES
+====================================================== */
 
-function updateNPCs() {
+function createTrees() {
 
-    for (const npc of npcs) {
+    treesElement.innerHTML = "";
 
-        if (npc.home) {
+    for (
+        const tree
+        of trees
+    ) {
+
+        const element =
+            document.createElement(
+                "div"
+            );
+
+        element.className =
+            "tree";
+
+        element.style.left =
+            tree.x + "px";
+
+        element.style.top =
+            tree.y + "px";
+
+        element.style.transform =
+            `scale(${tree.size / 32})`;
+
+        treesElement.appendChild(
+            element
+        );
+    }
+}
+
+
+/* ======================================================
+   CREAR NPCS
+====================================================== */
+
+function createNPCs() {
+
+    npcsElement.innerHTML = "";
+
+    for (
+        const npc
+        of npcs
+    ) {
+
+        const element =
+            document.createElement(
+                "div"
+            );
+
+        element.className =
+            "npc";
+
+        element.title =
+            `${npc.name} — ${npc.profession}`;
+
+        element.style.background =
+            npc.color;
+
+        element.style.left =
+            npc.x + "px";
+
+        element.style.top =
+            npc.y + "px";
+
+        element.dataset.id =
+            npc.id;
+
+        npcsElement.appendChild(
+            element
+        );
+    }
+}
+
+
+/* ======================================================
+   ACTUALIZAR NPCS VISUALES
+====================================================== */
+
+function updateNPCVisuals() {
+
+    const elements =
+        npcsElement.children;
+
+    for (
+        let i = 0;
+        i < elements.length;
+        i++
+    ) {
+
+        const element =
+            elements[i];
+
+        const npc =
+            npcs[i];
+
+        if (!npc) {
             continue;
         }
 
-        if (Math.random() < .01) {
+        element.style.left =
+            npc.x + "px";
 
-            npc.direction =
-                Math.random() * Math.PI * 2;
-        }
-
-        if (!npc.direction) {
-
-            npc.direction =
-                Math.random() * Math.PI * 2;
-        }
-
-        npc.x +=
-            Math.cos(npc.direction) *
-            npc.speed;
-
-        npc.y +=
-            Math.sin(npc.direction) *
-            npc.speed;
-
-        if (
-            npc.x < 100 ||
-            npc.x > WORLD.width - 100
-        ) {
-
-            npc.direction += Math.PI;
-        }
-
-        if (
-            npc.y < 100 ||
-            npc.y > WORLD.height - 100
-        ) {
-
-            npc.direction += Math.PI;
-        }
+        element.style.top =
+            npc.y + "px";
     }
 }
 
 
-/* ============================================================
-   VEHÍCULOS
-   ============================================================ */
+/* ======================================================
+   ACTUALIZAR JUGADOR
+====================================================== */
 
-function updateVehicles() {
+function updatePlayerVisual() {
 
-    for (const vehicle of vehicles) {
+    playerElement.style.left =
+        player.x + "px";
 
-        vehicle.x += vehicle.speed;
-
-        if (vehicle.x > WORLD.width + 150) {
-
-            vehicle.x = -200;
-        }
-    }
+    playerElement.style.top =
+        player.y + "px";
 }
 
 
-/* ============================================================
-   CÁMARA
-   ============================================================ */
+/* ======================================================
+   ACTUALIZAR CÁMARA
+====================================================== */
 
 function updateCamera() {
 
-    camera.x =
-        player.x -
-        W / 2;
-
-    camera.y =
-        player.y -
-        H / 2;
-
-    camera.x = Math.max(
-        0,
-        Math.min(
-            WORLD.width - W,
-            camera.x
-        )
-    );
-
-    camera.y = Math.max(
-        0,
-        Math.min(
-            WORLD.height - H,
-            camera.y
-        )
-    );
+    world.style.transform =
+        `translate(
+            ${-game.camera.x}px,
+            ${-game.camera.y}px
+        )`;
 }
 
 
-/* ============================================================
-   DIBUJAR TERRENO
-   ============================================================ */
-
-function drawGround() {
-
-    ctx.fillStyle = "#6e9f58";
-
-    ctx.fillRect(
-        0,
-        0,
-        WORLD.width,
-        WORLD.height
-    );
-
-    /* zonas de tierra */
-
-    ctx.fillStyle = "#789b58";
-
-    for (let x = 0; x < WORLD.width; x += 100) {
-
-        for (let y = 0; y < WORLD.height; y += 100) {
-
-            if ((x + y) % 300 === 0) {
-
-                ctx.fillRect(
-                    x,
-                    y,
-                    40,
-                    40
-                );
-            }
-        }
-    }
-}
-
-
-/* ============================================================
-   DIBUJAR CALLES
-   ============================================================ */
-
-function drawRoads() {
-
-    for (const road of roads) {
-
-        ctx.fillStyle = "#454545";
-
-        ctx.fillRect(
-            road.x,
-            road.y,
-            road.width,
-            road.height
-        );
-
-        ctx.strokeStyle =
-            "#e8c547";
-
-        ctx.lineWidth = 4;
-
-        ctx.setLineDash([
-            35,
-            25
-        ]);
-
-        if (road.width > road.height) {
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                road.x,
-                road.y + road.height / 2
-            );
-
-            ctx.lineTo(
-                road.x + road.width,
-                road.y + road.height / 2
-            );
-
-            ctx.stroke();
-
-        } else {
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                road.x + road.width / 2,
-                road.y
-            );
-
-            ctx.lineTo(
-                road.x + road.width / 2,
-                road.y + road.height
-            );
-
-            ctx.stroke();
-        }
-
-        ctx.setLineDash([]);
-    }
-}
-
-
-/* ============================================================
-   ÁRBOLES
-   ============================================================ */
-
-function drawTrees() {
-
-    for (const tree of trees) {
-
-        ctx.fillStyle = "#704214";
-
-        ctx.fillRect(
-            tree.x - 4,
-            tree.y,
-            8,
-            tree.size
-        );
-
-        ctx.fillStyle = "#28613a";
-
-        ctx.beginPath();
-
-        ctx.arc(
-            tree.x,
-            tree.y,
-            tree.size,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-    }
-}
-
-
-/* ============================================================
-   EDIFICIOS
-   ============================================================ */
-
-function drawBuildings() {
-
-    for (const b of buildings) {
-
-        /* sombra */
-
-        ctx.fillStyle =
-            "rgba(0,0,0,.25)";
-
-        ctx.fillRect(
-            b.x + 10,
-            b.y + 12,
-            b.width,
-            b.height
-        );
-
-        /* edificio */
-
-        ctx.fillStyle =
-            b.color;
-
-        ctx.fillRect(
-            b.x,
-            b.y,
-            b.width,
-            b.height
-        );
-
-        /* techo */
-
-        ctx.fillStyle =
-            "rgba(0,0,0,.22)";
-
-        ctx.fillRect(
-            b.x,
-            b.y,
-            b.width,
-            25
-        );
-
-        /* ventanas */
-
-        ctx.fillStyle =
-            "#dceef2";
-
-        for (
-            let x = b.x + 25;
-            x < b.x + b.width - 20;
-            x += 70
-        ) {
-
-            ctx.fillRect(
-                x,
-                b.y + 55,
-                35,
-                40
-            );
-        }
-
-        /* puerta */
-
-        ctx.fillStyle =
-            "#4a2c1d";
-
-        ctx.fillRect(
-            b.x + b.width / 2 - 22,
-            b.y + b.height - 70,
-            44,
-            70
-        );
-
-        /* nombre */
-
-        ctx.fillStyle =
-            "#ffffff";
-
-        ctx.font =
-            "bold 15px Arial";
-
-        ctx.textAlign =
-            "center";
-
-        ctx.fillText(
-            b.name,
-            b.x + b.width / 2,
-            b.y - 10
-        );
-
-        ctx.textAlign =
-            "left";
-    }
-}
-
-
-/* ============================================================
-   VEHÍCULOS
-   ============================================================ */
-
-function drawVehicles() {
-
-    for (const v of vehicles) {
-
-        const x = v.x;
-        const y = v.y;
-
-        ctx.fillStyle =
-            "rgba(0,0,0,.25)";
-
-        ctx.fillRect(
-            x + 4,
-            y + 22,
-            105,
-            15
-        );
-
-        ctx.fillStyle =
-            v.color;
-
-        ctx.fillRect(
-            x,
-            y,
-            110,
-            42
-        );
-
-        ctx.fillStyle =
-            "#20252a";
-
-        ctx.fillRect(
-            x + 20,
-            y - 20,
-            70,
-            28
-        );
-
-        ctx.fillStyle =
-            "#8fd3e8";
-
-        ctx.fillRect(
-            x + 28,
-            y - 15,
-            25,
-            17
-        );
-
-        ctx.fillRect(
-            x + 57,
-            y - 15,
-            25,
-            17
-        );
-
-        ctx.fillStyle =
-            "#111";
-
-        ctx.beginPath();
-
-        ctx.arc(
-            x + 23,
-            y + 43,
-            9,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-
-        ctx.beginPath();
-
-        ctx.arc(
-            x + 87,
-            y + 43,
-            9,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-
-        ctx.fillStyle =
-            "#fff";
-
-        ctx.font =
-            "10px Arial";
-
-        ctx.fillText(
-            v.type,
-            x + 10,
-            y + 60
-        );
-    }
-}
-
-
-/* ============================================================
-   NPCS
-   ============================================================ */
-
-function drawNPCs() {
-
-    for (const npc of npcs) {
-
-        ctx.fillStyle =
-            npc.color;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            npc.x,
-            npc.y - 25,
-            12,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-
-        ctx.fillStyle =
-            "#243b53";
-
-        ctx.fillRect(
-            npc.x - 12,
-            npc.y - 13,
-            24,
-            35
-        );
-
-        ctx.fillStyle =
-            "#fff";
-
-        ctx.font =
-            "11px Arial";
-
-        ctx.textAlign =
-            "center";
-
-        ctx.fillText(
-            npc.name,
-            npc.x,
-            npc.y - 43
-        );
-
-        ctx.fillStyle =
-            "#d0d0d0";
-
-        ctx.font =
-            "9px Arial";
-
-        ctx.fillText(
-            npc.role,
-            npc.x,
-            npc.y + 35
-        );
-
-        ctx.textAlign =
-            "left";
-    }
-}
-
-
-/* ============================================================
-   JUGADOR
-   ============================================================ */
-
-function drawPlayer() {
-
-    const bounce =
-        player.dancing
-        ? Math.sin(Date.now() / 90) * 5
-        : 0;
-
-    const x = player.x;
-    const y = player.y + bounce;
-
-    /* sombra */
-
-    ctx.fillStyle =
-        "rgba(0,0,0,.3)";
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        x,
-        y + 25,
-        17,
-        7,
-        0,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-    /* cabeza */
-
-    ctx.fillStyle =
-        "#a86643";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        x,
-        y - 30,
-        13,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-    /* pelo */
-
-    ctx.fillStyle =
-        "#21170f";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        x,
-        y - 37,
-        12,
-        Math.PI,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-    /* camisa */
-
-    ctx.fillStyle =
-        "#d62828";
-
-    ctx.fillRect(
-        x - 14,
-        y - 17,
-        28,
-        35
-    );
-
-    /* brazos */
-
-    ctx.fillStyle =
-        "#a86643";
-
-    ctx.fillRect(
-        x - 22,
-        y - 12,
-        8,
-        24
-    );
-
-    ctx.fillRect(
-        x + 14,
-        y - 12,
-        8,
-        24
-    );
-
-    /* pantalón */
-
-    ctx.fillStyle =
-        "#253237";
-
-    ctx.fillRect(
-        x - 13,
-        y + 18,
-        11,
-        27
-    );
-
-    ctx.fillRect(
-        x + 2,
-        y + 18,
-        11,
-        27
-    );
-
-    /* nombre */
-
-    ctx.fillStyle =
-        "#fff";
-
-    ctx.font =
-        "bold 11px Arial";
-
-    ctx.textAlign =
-        "center";
-
-    ctx.fillText(
-        player.name,
-        x,
-        y - 53
-    );
-
-    ctx.textAlign =
-        "left";
-}
-
-
-/* ============================================================
-   SOMBRAS / ILUMINACIÓN
-   ============================================================ */
-
-function drawLighting() {
-
-    let darkness = 0;
-
-    const h = worldTime.hour;
-
-    if (h >= 19 || h < 6) {
-
-        darkness = .48;
-
-    } else if (h >= 17) {
-
-        darkness = .20;
-
-    } else if (h < 8) {
-
-        darkness = .15;
-    }
-
-    if (darkness > 0) {
-
-        ctx.fillStyle =
-            `rgba(8,20,55,${darkness})`;
-
-        ctx.fillRect(
-            camera.x,
-            camera.y,
-            W,
-            H
-        );
-    }
-}
-
-
-/* ============================================================
-   INTERACCIÓN
-   ============================================================ */
-
-function nearestNPC(maxDistance = 120) {
-
-    let closest = null;
-    let distance = Infinity;
-
-    for (const npc of npcs) {
-
-        const d =
-            Math.hypot(
-                player.x - npc.x,
-                player.y - npc.y
-            );
-
-        if (
-            d < distance &&
-            d < maxDistance
-        ) {
-
-            closest = npc;
-            distance = d;
-        }
-    }
-
-    return closest;
-}
-
-
-function nearestBuilding(maxDistance = 180) {
-
-    let closest = null;
-    let distance = Infinity;
-
-    for (const b of buildings) {
-
-        const cx =
-            b.x + b.width / 2;
-
-        const cy =
-            b.y + b.height / 2;
-
-        const d =
-            Math.hypot(
-                player.x - cx,
-                player.y - cy
-            );
-
-        if (
-            d < distance &&
-            d < maxDistance
-        ) {
-
-            closest = b;
-            distance = d;
-        }
-    }
-
-    return closest;
-}
-
-
-function interact() {
-
-    const npc =
-        nearestNPC();
-
-    if (npc) {
-
-        talkToNPC(npc);
-
-        return;
-    }
-
-    const building =
-        nearestBuilding();
-
-    if (!building) {
-
-        notify(
-            "No hay nada cerca con lo que puedas interactuar."
-        );
-
-        return;
-    }
-
-    switch (building.type) {
-
-        case "house":
-
-            openDialog(
-                "🏠 Casa Familiar",
-                "Aquí vive tu familia. Puedes conversar con tu madre, tu padre y tu hermana, comer, descansar y recuperar energía."
-            );
-
-            break;
-
-        case "shop":
-
-            openDialog(
-                "🏪 Colmado Don Pepe",
-                "El colmado del barrio. Puedes comprar comida y conversar con los vecinos."
-            );
-
-            break;
-
-        case "barber":
-
-            openDialog(
-                "💈 Barbería El Barrio",
-                "Aquí puedes trabajar como barbero y aprender el oficio."
-            );
-
-            break;
-
-        case "school":
-
-            openDialog(
-                "🎓 Escuela Primaria",
-                "Puedes estudiar aquí para desarrollar habilidades y conseguir mejores trabajos."
-            );
-
-            break;
-
-        case "club":
-
-            openDialog(
-                "💃 Club Social",
-                "Lugar para compartir con amigos, escuchar música, bailar bachata, merengue y salsa."
-            );
-
-            break;
-
-        case "market":
-
-            openDialog(
-                "🛒 Supermercado",
-                "Aquí puedes buscar trabajo como empacador o realizar compras."
-            );
-
-            break;
-
-        case "bus":
-
-            openDialog(
-                "🚕 Parada de Conchos",
-                "Aquí podrás tomar un carro público para viajar por la ciudad."
-            );
-
-            break;
-    }
-}
-
-
-/* ============================================================
-   CONVERSACIONES
-   ============================================================ */
-
-function talkToNPC(npc) {
-
-    if (npc.name === "Doña Carmen") {
-
-        openDialog(
-            "Doña Carmen",
-            "Mijo, no te olvides de pasar por la casa. Tu familia siempre está pendiente de ti."
-        );
-
-        family.mother.mood =
-            Math.min(
-                100,
-                family.mother.mood + 5
-            );
-
-        return;
-    }
-
-    if (npc.name === "Don Rafael") {
-
-        openDialog(
-            "Don Rafael",
-            "Muchacho, trabaja y aprende un oficio. Así podrás sacar tu familia adelante."
-        );
-
-        family.father.mood =
-            Math.min(
-                100,
-                family.father.mood + 5
-            );
-
-        return;
-    }
-
-    if (npc.role === "Barbero") {
-
-        openDialog(
-            npc.name,
-            "Si quieres aprender el oficio de barbero, puedes ayudarme en la barbería."
-        );
-
-        return;
-    }
-
-    if (npc.role === "Taxista") {
-
-        openDialog(
-            npc.name,
-            "Los conchos mantienen a mucha gente moviéndose por la ciudad. Si quieres, puedes aprender a trabajar de taxista."
-        );
-
-        return;
-    }
-
-    if (npc.role === "Músico") {
-
-        openDialog(
-            npc.name,
-            "La música está viva esta noche. En el club hay gente bailando bachata y merengue."
-        );
-
-        return;
-    }
-
-    openDialog(
-        npc.name,
-        "Hola. Soy " +
-        npc.name +
-        ". Trabajo como " +
-        npc.role +
-        "."
-    );
-}
-
-
-/* ============================================================
-   TRABAJO
-   ============================================================ */
-
-function work() {
-
-    const building =
-        nearestBuilding(200);
-
-    if (!building) {
-
-        notify(
-            "Acércate a un lugar donde puedas trabajar."
-        );
-
-        return;
-    }
-
-    if (building.type === "barber") {
-
-        player.job =
-            "Ayudante de barbero";
-
-        player.money += 5;
-
-        player.energy -= 8;
-
-        notify(
-            "💈 Trabajaste en la barbería. +$5"
-        );
-
-        return;
-    }
-
-    if (building.type === "market") {
-
-        player.job =
-            "Empacador";
-
-        player.money += 4;
-
-        player.energy -= 7;
-
-        notify(
-            "🛒 Trabajaste como empacador. +$4"
-        );
-
-        return;
-    }
-
-    if (building.type === "shop") {
-
-        player.job =
-            "Ayudante del colmado";
-
-        player.money += 4;
-
-        player.energy -= 6;
-
-        notify(
-            "🏪 Ayudaste en el colmado. +$4"
-        );
-
-        return;
-    }
-
-    if (building.type === "bus") {
-
-        player.job =
-            "Ayudante de concho";
-
-        player.money += 6;
-
-        player.energy -= 10;
-
-        notify(
-            "🚕 Trabajaste con un concho. +$6"
-        );
-
-        return;
-    }
-
-    notify(
-        "Aquí no puedes trabajar ahora."
-    );
-}
-
-
-/* ============================================================
-   BAILE
-   ============================================================ */
-
-function dance() {
-
-    const building =
-        nearestBuilding(220);
-
-    if (
-        !building ||
-        building.type !== "club"
-    ) {
-
-        notify(
-            "Busca el Club Social para bailar."
-        );
-
-        return;
-    }
-
-    player.dancing =
-        !player.dancing;
-
-    if (player.dancing) {
-
-        player.energy -= 5;
-
-        notify(
-            "💃 ¡Bachata! Estás bailando."
-        );
-
-        document.getElementById(
-            "activity"
-        ).textContent =
-            "Bailando bachata.";
-
-    } else {
-
-        notify(
-            "Terminaste de bailar."
-        );
-
-        document.getElementById(
-            "activity"
-        ).textContent =
-            "Descansando después del baile.";
-    }
-}
-
-
-/* ============================================================
-   CASA
-   ============================================================ */
-
-function goHome() {
-
-    const building =
-        buildings.find(
-            b => b.type === "house"
-        );
-
-    const distance =
-        Math.hypot(
-            player.x -
-            (building.x + building.width / 2),
-
-            player.y -
-            (building.y + building.height / 2)
-        );
-
-    if (distance > 250) {
-
-        notify(
-            "Tu casa está demasiado lejos."
-        );
-
-        return;
-    }
-
-    openDialog(
-        "🏠 Tu familia",
-        "Tu madre, tu padre y tu hermana están en casa. Puedes descansar y compartir con ellos."
-    );
-
-    family.mother.mood =
-        Math.min(
-            100,
-            family.mother.mood + 8
-        );
-
-    family.father.mood =
-        Math.min(
-            100,
-            family.father.mood + 8
-        );
-
-    family.sister.mood =
-        Math.min(
-            100,
-            family.sister.mood + 8
-        );
-}
-
-
-/* ============================================================
-   DESCANSAR
-   ============================================================ */
-
-function rest() {
-
-    const home =
-        buildings.find(
-            b => b.type === "house"
-        );
-
-    const distance =
-        Math.hypot(
-            player.x -
-            (home.x + home.width / 2),
-
-            player.y -
-            (home.y + home.height / 2)
-        );
-
-    if (distance > 250) {
-
-        notify(
-            "Debes estar cerca de tu casa para descansar."
-        );
-
-        return;
-    }
-
-    player.sleeping = true;
-
-    player.energy = 100;
-
-    player.hunger -= 15;
-
-    worldTime.hour += 7;
-
-    if (worldTime.hour >= 24) {
-
-        worldTime.hour -= 24;
-
-        nextDay();
-    }
-
-    setTimeout(() => {
-
-        player.sleeping = false;
-
-        notify(
-            "😴 Has descansado. Buenos días."
-        );
-
-    }, 700);
-}
-
-
-/* ============================================================
-   DIALOG
-   ============================================================ */
-
-function openDialog(title, text) {
+/* ======================================================
+   ACTUALIZAR HUD
+====================================================== */
+
+function updateHUD() {
 
     document.getElementById(
-        "dialogTitle"
-    ).textContent = title;
-
-    document.getElementById(
-        "dialogText"
-    ).textContent = text;
-
-    document.getElementById(
-        "dialog"
-    ).classList.add("active");
-}
-
-
-function closeDialog() {
-
-    document.getElementById(
-        "dialog"
-    ).classList.remove("active");
-}
-
-
-/* ============================================================
-   NOTIFICACIONES
-   ============================================================ */
-
-let notificationTimeout;
-
-function notify(text) {
-
-    const element =
-        document.getElementById(
-            "notification"
-        );
-
-    document.getElementById(
-        "notificationText"
-    ).textContent = text;
-
-    element.classList.add("show");
-
-    clearTimeout(
-        notificationTimeout
-    );
-
-    notificationTimeout =
-        setTimeout(() => {
-
-            element.classList.remove(
-                "show"
-            );
-
-        }, 2500);
-}
-
-
-/* ============================================================
-   ESTADO
-   ============================================================ */
-
-function updateStats() {
-
-    player.health =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                player.health
-            )
-        );
-
-    player.energy =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                player.energy
-            )
-        );
-
-    player.hunger =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                player.hunger
-            )
-        );
-
-    if (player.hunger < 20) {
-
-        player.health -= .01;
-    }
-
-    if (player.energy < 10) {
-
-        player.health -= .005;
-    }
-}
-
-
-/* ============================================================
-   UI
-   ============================================================ */
-
-function updateUI() {
-
-    const hour =
-        String(
-            Math.floor(
-                worldTime.hour
-            )
-        ).padStart(2, "0");
-
-    const minute =
-        String(
-            Math.floor(
-                worldTime.minute
-            )
-        ).padStart(2, "0");
-
-    document.getElementById(
-        "year"
+        "playerName"
     ).textContent =
-        worldTime.year;
+        player.name;
 
-    document.getElementById(
-        "clock"
-    ).textContent =
-        `${hour}:${minute}`;
-
-    document.getElementById(
-        "healthText"
-    ).textContent =
-        Math.round(
-            player.health
-        );
-
-    document.getElementById(
-        "energyText"
-    ).textContent =
-        Math.round(
-            player.energy
-        );
-
-    document.getElementById(
-        "hungerText"
-    ).textContent =
-        Math.round(
-            player.hunger
-        );
-
-    document.getElementById(
-        "healthBar"
-    ).style.width =
-        player.health + "%";
-
-    document.getElementById(
-        "energyBar"
-    ).style.width =
-        player.energy + "%";
-
-    document.getElementById(
-        "hungerBar"
-    ).style.width =
-        player.hunger + "%";
 
     document.getElementById(
         "money"
     ).textContent =
-        "$" +
         Math.floor(
             player.money
         );
+
+
+    document.getElementById(
+        "healthFill"
+    ).style.width =
+        `${player.health}%`;
+
+
+    document.getElementById(
+        "energyFill"
+    ).style.width =
+        `${player.energy}%`;
+
+
+    document.getElementById(
+        "hungerFill"
+    ).style.width =
+        `${player.hunger}%`;
+
 
     document.getElementById(
         "job"
     ).textContent =
         player.job;
 
-    const familyAverage =
-        (
-            family.mother.mood +
-            family.father.mood +
-            family.sister.mood
-        ) / 3;
 
-    let familyMood =
-        "Contenta";
+    const hour =
+        String(
+            Math.floor(
+                game.time.hour
+            )
+        ).padStart(
+            2,
+            "0"
+        );
 
-    if (familyAverage < 40) {
 
-        familyMood =
-            "Preocupada";
+    const minute =
+        String(
+            Math.floor(
+                game.time.minute
+            )
+        ).padStart(
+            2,
+            "0"
+        );
 
-    } else if (familyAverage < 65) {
 
-        familyMood =
-            "Normal";
+    document.getElementById(
+        "clock"
+    ).textContent =
+        `${hour}:${minute}`;
+
+
+    document.getElementById(
+        "date"
+    ).textContent =
+        `${game.time.day}/${game.time.month}/${game.time.year}`;
+
+
+    /* Mensaje */
+
+    if (
+        game.messageTimer > 0
+    ) {
+
+        messageElement.textContent =
+            game.message;
+
+        messageElement.classList.add(
+            "visible"
+        );
+
+    } else {
+
+        messageElement.classList.remove(
+            "visible"
+        );
     }
 
-    document.getElementById(
-        "familyMood"
-    ).textContent =
-        familyMood;
 
-    document.getElementById(
-        "status"
-    ).textContent =
-        player.sleeping
-        ? "Durmiendo"
-        : player.dancing
-            ? "Bailando"
-            : "Libre";
+    /* Pausa */
+
+    if (
+        game.paused
+    ) {
+
+        pausedElement.classList.add(
+            "visible"
+        );
+
+    } else {
+
+        pausedElement.classList.remove(
+            "visible"
+        );
+    }
 }
 
 
-/* ============================================================
-   DIBUJAR
-   ============================================================ */
+/* ======================================================
+   MINIMAPA
+====================================================== */
 
-function draw() {
+function updateMinimap() {
 
-    ctx.clearRect(
-        0,
-        0,
-        W,
-        H
-    );
+    const miniPlayer =
+        document.getElementById(
+            "miniPlayer"
+        );
 
-    ctx.save();
 
-    ctx.translate(
-        -camera.x,
-        -camera.y
-    );
+    const x =
+        player.x /
+        WORLD.width *
+        100;
 
-    drawGround();
 
-    drawTrees();
+    const y =
+        player.y /
+        WORLD.height *
+        100;
 
-    drawRoads();
 
-    drawBuildings();
+    miniPlayer.style.left =
+        `${x}%`;
 
-    drawVehicles();
-
-    drawNPCs();
-
-    drawPlayer();
-
-    ctx.restore();
-
-    drawLighting();
+    miniPlayer.style.top =
+        `${y}%`;
 }
 
 
-/* ============================================================
-   GAME LOOP
-   ============================================================ */
+/* ======================================================
+   INICIAR MUNDO
+====================================================== */
 
-function update() {
+createRegions();
 
-    updateTime();
+createRoads();
 
-    updatePlayer();
+createLocations();
 
-    updateNPCs();
+createTrees();
 
-    updateVehicles();
+createNPCs();
+
+startGame();
+
+
+/* ======================================================
+   LOOP PRINCIPAL
+====================================================== */
+
+let lastTime =
+    performance.now();
+
+
+function gameLoop(
+    currentTime
+) {
+
+    const delta =
+        Math.min(
+            (currentTime - lastTime) /
+            16.666,
+            3
+        );
+
+    lastTime =
+        currentTime;
+
+
+    update(delta);
+
+    updatePlayerVisual();
+
+    updateNPCVisuals();
 
     updateCamera();
 
-    updateStats();
+    updateHUD();
 
-    updateUI();
-}
+    updateMinimap();
 
-
-function loop() {
-
-    update();
-
-    draw();
 
     requestAnimationFrame(
-        loop
+        gameLoop
     );
 }
 
 
-/* ============================================================
-   INICIO
-   ============================================================ */
-
-notify(
-    "🇩🇴 Bienvenido a Dominican City — 1965"
+requestAnimationFrame(
+    gameLoop
 );
-
-loop();
 
 </script>
 
 </body>
+
 </html>
