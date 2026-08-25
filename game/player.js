@@ -2,7 +2,7 @@
 // DOMINICAN CITY - PLAYER V3
 // Sistema del personaje principal
 // ============================================================
-
+k
 export const player = {
     name: "José",
 
