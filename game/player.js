@@ -155,11 +155,11 @@ export function spendMoney(amount) {
 // ENERGÍA
 // ============================================================
 
-export function restoreEnergy(amount) {
+export function consumeEnergy(amount) {
 
-    player.energy = Math.min(
-        100,
-        player.energy + amount
+    player.energy = Math.max(
+        0,
+        player.energy - amount
     );
 }
 
