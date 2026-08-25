@@ -1,14 +1,16 @@
 // ============================================================
-// DOMINICAN CITY - JOBS V3
-// Sistema de trabajos y economía
+// DOMINICAN CITY - JOBS V5
+// Sistema de trabajos, turnos y economía
 // ============================================================
 
 import {
+    player,
     addMoney,
     changeReputation,
-    consumeEnergy
+    consumeEnergy,
+    startWorking,
+    stopWorking
 } from "./player.js";
-
 
 
 // ============================================================
@@ -18,146 +20,218 @@ import {
 export const jobs = {
 
     unemployed: {
+
         id: "unemployed",
+
         name: "Desempleado",
+
         salary: 0,
+
         energyCost: 0,
+
         reputation: 0,
 
         description:
             "Actualmente no tienes trabajo."
+
     },
 
 
     barber: {
+
         id: "barber",
+
         name: "Barbero",
+
         salary: 12,
+
         energyCost: 8,
+
         reputation: 2,
 
         description:
             "Trabaja en una barbería y aprende el oficio."
+
     },
 
 
     taxi: {
+
         id: "taxi",
+
         name: "Chofer de concho",
+
         salary: 15,
+
         energyCost: 10,
+
         reputation: 2,
 
         description:
             "Transporta pasajeros por la ciudad."
+
     },
 
 
     supermarket: {
+
         id: "supermarket",
+
         name: "Empacador",
+
         salary: 8,
+
         energyCost: 6,
+
         reputation: 1,
 
         description:
-            "Ayuda a los clientes y empaca sus compras."
+            "Empaca las compras de los clientes."
+
     },
 
 
     farmer: {
+
         id: "farmer",
+
         name: "Agricultor",
+
         salary: 14,
+
         energyCost: 15,
+
         reputation: 2,
 
         description:
             "Trabaja la tierra y ayuda con las cosechas."
+
     },
 
 
     musician: {
+
         id: "musician",
+
         name: "Músico",
+
         salary: 18,
+
         energyCost: 12,
+
         reputation: 4,
 
         description:
-            "Toca música en fiestas, clubes y reuniones."
+            "Toca música en fiestas y reuniones."
+
     },
 
 
     singer: {
+
         id: "singer",
+
         name: "Cantante",
+
         salary: 20,
+
         energyCost: 12,
+
         reputation: 5,
 
         description:
             "Canta en clubes y eventos."
+
     },
 
 
     student: {
+
         id: "student",
+
         name: "Estudiante",
+
         salary: 0,
+
         energyCost: 5,
+
         reputation: 1,
 
         description:
-            "Asiste a la escuela para mejorar tu educación."
+            "Estudia para mejorar tu educación."
+
     },
 
 
     street_vendor: {
+
         id: "street_vendor",
+
         name: "Vendedor ambulante",
+
         salary: 10,
+
         energyCost: 9,
+
         reputation: 1,
 
         description:
             "Vende productos por las calles."
+
     },
 
 
     mechanic: {
+
         id: "mechanic",
+
         name: "Mecánico",
+
         salary: 16,
+
         energyCost: 12,
+
         reputation: 3,
 
         description:
-            "Repara vehículos y aprende mecánica."
+            "Repara vehículos."
+
     },
 
 
     construction: {
+
         id: "construction",
-        name: "Trabajador de construcción",
+
+        name: "Constructor",
+
         salary: 17,
+
         energyCost: 18,
+
         reputation: 3,
 
         description:
-            "Ayuda a construir y reparar edificios."
+            "Construye y repara edificios."
+
     },
 
 
     fisherman: {
+
         id: "fisherman",
+
         name: "Pescador",
+
         salary: 13,
+
         energyCost: 14,
+
         reputation: 2,
 
         description:
-            "Sale a pescar y vende sus capturas."
+            "Pesca y vende sus capturas."
+
     }
 
 };
@@ -175,29 +249,77 @@ export const workState = {
 
     totalEarned: 0,
 
-    working: false
+    working: false,
+
+    workTimer: 0,
+
+    shiftLength: 30
+
 };
+
+
+// ============================================================
+// MENSAJE DE TRABAJO
+// ============================================================
+
+function result(
+    success,
+    message,
+    money = 0
+) {
+
+    return {
+
+        success,
+
+        message,
+
+        money
+
+    };
+
+}
 
 
 // ============================================================
 // CONSEGUIR TRABAJO
 // ============================================================
 
-export function getJob(jobId) {
+export function getJob(
+    jobId
+) {
 
     const job =
         jobs[jobId];
 
+
     if (!job) {
-        return false;
+
+        return result(
+            false,
+            "Ese trabajo no existe."
+        );
+
     }
+
 
     workState.currentJob =
         jobId;
 
-    workState.hoursWorked = 0;
 
-    return true;
+    workState.hoursWorked =
+        0;
+
+
+    workState.totalEarned =
+        0;
+
+
+    return result(
+        true,
+        `Ahora eres ${job.name}.`
+    );
+
 }
 
 
@@ -210,9 +332,21 @@ export function quitJob() {
     workState.currentJob =
         "unemployed";
 
-    workState.hoursWorked = 0;
 
-    workState.working = false;
+    workState.hoursWorked =
+        0;
+
+
+    workState.totalEarned =
+        0;
+
+
+    workState.working =
+        false;
+
+
+    stopWorking();
+
 }
 
 
@@ -227,62 +361,139 @@ export function startWork() {
         "unemployed"
     ) {
 
-        return {
-            success: false,
-            message:
-                "No tienes trabajo."
-        };
+        return result(
+            false,
+            "❌ No tienes trabajo. Busca un lugar donde puedas trabajar."
+        );
+
     }
 
-    workState.working = true;
 
-    return {
-        success: true,
-        message:
-            "Has comenzado tu jornada."
-    };
-}
+    if (
+        workState.working
+    ) {
+
+        return result(
+            false,
+            "💼 Ya estás trabajando."
+        );
+
+    }
 
 
-// ============================================================
-// TRABAJAR
-// ============================================================
+    if (
+        player.energy < 10
+    ) {
 
-export function work(hours = 1) {
+        return result(
+            false,
+            "😴 Estás demasiado cansado para trabajar."
+        );
+
+    }
+
 
     const job =
         jobs[
             workState.currentJob
         ];
 
+
+    workState.working =
+        true;
+
+
+    workState.workTimer =
+        0;
+
+
+    startWorking(
+        job.id,
+        job.name
+    );
+
+
+    return result(
+        true,
+        `💼 Comenzaste a trabajar como ${job.name}.`
+    );
+
+}
+
+
+// ============================================================
+// REALIZAR UNA HORA DE TRABAJO
+// ============================================================
+
+export function work(
+    hours = 1
+) {
+
+    const job =
+        jobs[
+            workState.currentJob
+        ];
+
+
     if (!job) {
 
-        return {
-            success: false,
-            money: 0,
-            message:
-                "No tienes trabajo."
-        };
+        return result(
+            false,
+            "❌ No tienes trabajo."
+        );
+
     }
 
 
-    if (job.energyCost * hours >
-        100) {
+    if (
+        !workState.working
+    ) {
 
-        return {
-            success: false,
-            money: 0,
-            message:
-                "Estás demasiado cansado."
-        };
+        return result(
+            false,
+            "❌ No estás trabajando."
+        );
+
+    }
+
+
+    const energyNeeded =
+        job.energyCost *
+        hours;
+
+
+    if (
+        player.energy <
+        energyNeeded
+    ) {
+
+        return result(
+            false,
+            "😴 Estás demasiado cansado. Pulsa F para terminar."
+        );
+
     }
 
 
     const earned =
-        job.salary * hours;
+        job.salary *
+        hours;
 
 
-    addMoney(earned);
+    addMoney(
+        earned
+    );
+
+
+    consumeEnergy(
+        energyNeeded
+    );
+
+
+    changeReputation(
+        job.reputation *
+        hours
+    );
 
 
     workState.hoursWorked +=
@@ -293,27 +504,59 @@ export function work(hours = 1) {
         earned;
 
 
-    changeReputation(
-        job.reputation * hours
+    return result(
+
+        true,
+
+        `💰 Has trabajado ${hours} hora(s) y ganado $${earned}.`,
+
+        earned
+
     );
 
-
-    consumeEnergy(
-    job.energyCost * hours
-);
+}
 
 
-    return {
+// ============================================================
+// ACTUALIZAR TRABAJO
+// ============================================================
 
-        success: true,
+export function updateWork(
+    delta
+) {
 
-        money: earned,
+    if (
+        !workState.working
+    ) {
 
-        hours,
+        return null;
 
-        message:
-            `Has trabajado ${hours} hora(s) y ganado $${earned}.`
-    };
+    }
+
+
+    workState.workTimer +=
+        delta;
+
+
+    /*
+     * Cada 60 frames aproximadamente
+     * representa una hora de trabajo.
+     */
+
+    if (
+        workState.workTimer >= 60
+    ) {
+
+        workState.workTimer = 0;
+
+
+        return work(1);
+
+    }
+
+
+    return null;
+
 }
 
 
@@ -323,59 +566,58 @@ export function work(hours = 1) {
 
 export function finishWork() {
 
-    workState.working = false;
+    if (
+        !workState.working
+    ) {
+
+        return result(
+            false,
+            "❌ No estás trabajando."
+        );
+
+    }
+
+
+    const hours =
+        workState.hoursWorked;
+
+
+    const earned =
+        workState.totalEarned;
+
+
+    workState.working =
+        false;
+
+
+    workState.workTimer =
+        0;
+
+
+    stopWorking();
+
 
     return {
 
-        hours:
-            workState.hoursWorked,
+        success: true,
 
-        earned:
-            workState.totalEarned,
+        hours,
+
+        earned,
 
         job:
-            workState.currentJob
+            workState.currentJob,
+
+        message:
+            `🏁 Terminaste tu jornada. Trabajaste ${hours} hora(s) y ganaste $${earned}.`
+
     };
+
 }
 
 
 // ============================================================
-// CONSEGUIR TRABAJO ALEATORIO
-// ============================================================
-
-export function getRandomJob() {
-
-    const ids =
-        Object.keys(jobs)
-            .filter(
-                id =>
-                    id !== "unemployed"
-            );
-
-    const random =
-        Math.floor(
-            Math.random() *
-            ids.length
-        );
-
-    return jobs[
-        ids[random]
-    ];
-}
-
-
-// ============================================================
-// LISTA DE TRABAJOS
-// ============================================================
-
-export function getAvailableJobs() {
-
-    return Object.values(jobs);
-}
-
-
-// ============================================================
-// INFORMACIÓN DEL TRABAJO ACTUAL
+// TRABAJO ACTUAL
 // ============================================================
 
 export function getCurrentJob() {
@@ -383,4 +625,76 @@ export function getCurrentJob() {
     return jobs[
         workState.currentJob
     ];
+
+}
+
+
+// ============================================================
+// TRABAJOS DISPONIBLES
+// ============================================================
+
+export function getAvailableJobs() {
+
+    return Object.values(
+        jobs
+    );
+
+}
+
+
+// ============================================================
+// TRABAJO ALEATORIO
+// ============================================================
+
+export function getRandomJob() {
+
+    const ids =
+        Object.keys(
+            jobs
+        ).filter(
+            id =>
+                id !== "unemployed"
+        );
+
+
+    const random =
+        Math.floor(
+            Math.random() *
+            ids.length
+        );
+
+
+    return jobs[
+        ids[random]
+    ];
+
+}
+
+
+// ============================================================
+// ESTADO DEL TRABAJO
+// ============================================================
+
+export function getWorkStatus() {
+
+    return {
+
+        working:
+            workState.working,
+
+        currentJob:
+            workState.currentJob,
+
+        hoursWorked:
+            workState.hoursWorked,
+
+        totalEarned:
+            workState.totalEarned,
+
+        progress:
+            workState.workTimer /
+            workState.shiftLength
+
+    };
+
 }
