@@ -3,285 +3,233 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Dominican City — República Dominicana 1950-2000</title>
+<title>Dominican City — Versión 2</title>
 
 <style>
 * {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
 }
 
 html,
 body {
+    margin: 0;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #071018;
+    background: #101820;
     font-family: Arial, Helvetica, sans-serif;
     color: white;
 }
 
-#game {
-    position: fixed;
-    inset: 0;
-    background:
-        linear-gradient(rgba(0,0,0,.08), rgba(0,0,0,.2)),
-        #182a1d;
-}
-
 canvas {
     display: block;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     image-rendering: pixelated;
-    image-rendering: crisp-edges;
 }
-
-/* HUD */
 
 #hud {
     position: fixed;
-    top: 16px;
-    left: 16px;
+    top: 14px;
+    left: 14px;
     z-index: 20;
-
-    width: 300px;
-    padding: 14px;
-
-    background: rgba(12, 18, 24, .88);
-    border: 1px solid rgba(255,255,255,.15);
-    border-radius: 12px;
-
-    box-shadow: 0 10px 35px rgba(0,0,0,.35);
+    width: 310px;
+    padding: 15px;
+    border-radius: 14px;
+    background: rgba(12, 18, 24, .90);
+    border: 1px solid rgba(255,255,255,.16);
+    box-shadow: 0 12px 40px rgba(0,0,0,.35);
     backdrop-filter: blur(8px);
 }
 
 #hud h1 {
-    font-size: 18px;
-    margin-bottom: 8px;
+    margin: 0 0 10px;
     color: #ffd166;
+    font-size: 20px;
 }
 
-.stat {
-    margin: 7px 0;
-}
-
-.stat-label {
+.row {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
-    margin-bottom: 3px;
+    margin: 5px 0;
+    font-size: 13px;
 }
 
 .bar {
     height: 7px;
+    background: #263238;
     border-radius: 10px;
     overflow: hidden;
-    background: #222;
+    margin: 3px 0 7px;
 }
 
-.bar-fill {
+.fill {
     height: 100%;
-    transition: width .25s;
+    transition: width .2s;
 }
 
-.health { background: #e63946; }
-.energy { background: #06d6a0; }
-.hunger { background: #f4a261; }
+.health {
+    background: #e63946;
+}
+
+.energy {
+    background: #06d6a0;
+}
+
+.hunger {
+    background: #f4a261;
+}
+
+#clock {
+    color: #90e0ef;
+}
 
 #money {
     color: #ffd166;
     font-weight: bold;
 }
 
-#year {
-    color: #8ecae6;
-}
-
-/* INFO */
-
-#info {
-    position: fixed;
-    right: 16px;
-    top: 16px;
-    z-index: 20;
-
-    width: 270px;
-    padding: 14px;
-
-    background: rgba(12,18,24,.88);
-    border: 1px solid rgba(255,255,255,.15);
-    border-radius: 12px;
-
-    backdrop-filter: blur(8px);
-}
-
-#info h2 {
-    font-size: 15px;
+#location {
     color: #90be6d;
-    margin-bottom: 7px;
 }
 
-/* Controls */
-
-#controls {
+#help {
     position: fixed;
-    bottom: 16px;
-    left: 16px;
+    bottom: 15px;
+    left: 15px;
     z-index: 20;
-
-    padding: 12px 15px;
-
-    background: rgba(12,18,24,.88);
+    padding: 11px 14px;
     border-radius: 12px;
-
+    background: rgba(12,18,24,.88);
     font-size: 12px;
     line-height: 1.8;
-
-    border: 1px solid rgba(255,255,255,.12);
 }
 
 .key {
     display: inline-block;
-    min-width: 23px;
-    text-align: center;
-
-    padding: 2px 5px;
-
+    min-width: 22px;
+    padding: 1px 5px;
+    margin-right: 2px;
     border-radius: 4px;
-    background: #263238;
-    color: #fff;
-
+    background: #37474f;
+    text-align: center;
     font-weight: bold;
 }
 
-/* Notifications */
+#rightPanel {
+    position: fixed;
+    right: 15px;
+    top: 15px;
+    z-index: 20;
+    width: 270px;
+    padding: 15px;
+    border-radius: 14px;
+    background: rgba(12,18,24,.88);
+    border: 1px solid rgba(255,255,255,.14);
+}
+
+#rightPanel h2 {
+    margin: 0 0 8px;
+    color: #ffd166;
+    font-size: 16px;
+}
+
+#rightPanel p {
+    margin: 6px 0;
+    font-size: 13px;
+    color: #d8dee3;
+    line-height: 1.45;
+}
+
+#era {
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 25;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgba(0,0,0,.72);
+    font-size: 13px;
+}
 
 #notification {
     position: fixed;
     left: 50%;
-    bottom: 90px;
-
+    bottom: 80px;
     transform: translateX(-50%);
-
     z-index: 100;
-
     padding: 12px 20px;
-
-    background: rgba(0,0,0,.9);
-    border: 1px solid rgba(255,255,255,.2);
     border-radius: 10px;
-
+    background: rgba(0,0,0,.9);
+    border: 1px solid rgba(255,255,255,.15);
     opacity: 0;
     pointer-events: none;
-
     transition: opacity .25s;
-
-    font-size: 14px;
 }
 
 #notification.show {
     opacity: 1;
 }
 
-/* Interaction */
-
-#interaction {
+#dialog {
     position: fixed;
     left: 50%;
     top: 50%;
-
     transform: translate(-50%, -50%);
-
-    z-index: 50;
-
-    min-width: 320px;
-    max-width: 500px;
-
+    z-index: 200;
+    width: min(520px, 90vw);
     padding: 24px;
-
-    background: rgba(10,16,21,.96);
-
-    border: 1px solid rgba(255,255,255,.18);
     border-radius: 16px;
-
-    box-shadow: 0 25px 70px rgba(0,0,0,.55);
-
+    background: rgba(9,15,20,.97);
+    border: 1px solid rgba(255,255,255,.2);
+    box-shadow: 0 25px 80px rgba(0,0,0,.6);
     display: none;
 }
 
-#interaction.active {
+#dialog.active {
     display: block;
 }
 
-#interaction h2 {
+#dialog h2 {
+    margin-top: 0;
     color: #ffd166;
-    margin-bottom: 10px;
 }
 
-#interaction p {
-    color: #ccd6dd;
-    line-height: 1.5;
+#dialog p {
+    color: #d7dee4;
+    line-height: 1.6;
 }
 
 button {
-    margin-top: 15px;
-
-    border: none;
+    border: 0;
+    padding: 10px 16px;
     border-radius: 8px;
-
-    padding: 10px 15px;
-
-    background: #e9c46a;
-    color: #101010;
-
-    font-weight: bold;
-
+    background: #ffd166;
     cursor: pointer;
+    font-weight: bold;
 }
 
 button:hover {
-    background: #ffd166;
+    background: #ffe08a;
 }
 
-/* Era */
-
-#era {
-    position: fixed;
-    top: 16px;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    z-index: 30;
-
-    padding: 8px 15px;
-
-    border-radius: 20px;
-
-    background: rgba(0,0,0,.7);
-    color: #fff;
-
-    font-size: 12px;
+#toastIcon {
+    margin-right: 5px;
 }
 
-/* Mobile */
-
-@media(max-width: 700px) {
-
-    #hud {
-        width: 220px;
-        transform: scale(.85);
-        transform-origin: top left;
-    }
-
-    #info {
+@media (max-width: 800px) {
+    #rightPanel {
         display: none;
     }
 
-    #controls {
+    #hud {
+        width: 250px;
+        transform: scale(.86);
+        transform-origin: top left;
+    }
+
+    #help {
         font-size: 10px;
     }
 }
@@ -290,80 +238,88 @@ button:hover {
 
 <body>
 
-<div id="game"></div>
+<canvas id="game"></canvas>
 
 <div id="era">
-    República Dominicana · <span id="year">1965</span>
+    🇩🇴 Dominican City · Año <span id="year">1965</span> ·
+    <span id="clock">08:00</span>
 </div>
 
 <div id="hud">
 
     <h1>🇩🇴 Dominican City</h1>
 
-    <div class="stat">
-        <div class="stat-label">
-            <span>Salud</span>
-            <span id="healthText">100</span>
-        </div>
-
-        <div class="bar">
-            <div id="healthBar" class="bar-fill health" style="width:100%"></div>
-        </div>
+    <div class="row">
+        <span>Nombre</span>
+        <strong id="playerName">José</strong>
     </div>
 
-    <div class="stat">
-        <div class="stat-label">
-            <span>Energía</span>
-            <span id="energyText">100</span>
-        </div>
-
-        <div class="bar">
-            <div id="energyBar" class="bar-fill energy" style="width:100%"></div>
-        </div>
+    <div class="row">
+        <span>Trabajo</span>
+        <strong id="job">Desempleado</strong>
     </div>
 
-    <div class="stat">
-        <div class="stat-label">
-            <span>Hambre</span>
-            <span id="hungerText">100</span>
-        </div>
-
-        <div class="bar">
-            <div id="hungerBar" class="bar-fill hunger" style="width:100%"></div>
-        </div>
+    <div class="row">
+        <span>Dinero</span>
+        <strong id="money">$25</strong>
     </div>
 
-    <div style="margin-top:10px;">
-        Dinero:
-        <span id="money">$25</span>
+    <div class="row">
+        <span>Salud</span>
+        <span id="healthText">100</span>
     </div>
 
-    <div style="margin-top:5px;">
-        Trabajo:
-        <span id="job">Desempleado</span>
+    <div class="bar">
+        <div id="healthBar" class="fill health" style="width:100%"></div>
+    </div>
+
+    <div class="row">
+        <span>Energía</span>
+        <span id="energyText">100</span>
+    </div>
+
+    <div class="bar">
+        <div id="energyBar" class="fill energy" style="width:100%"></div>
+    </div>
+
+    <div class="row">
+        <span>Hambre</span>
+        <span id="hungerText">100</span>
+    </div>
+
+    <div class="bar">
+        <div id="hungerBar" class="fill hunger" style="width:100%"></div>
+    </div>
+
+    <div class="row">
+        <span>Familia</span>
+        <span id="familyMood">Contenta</span>
     </div>
 
 </div>
 
-<div id="info">
+<div id="rightPanel">
 
-    <h2>Ciudad</h2>
+    <h2>📍 Información</h2>
 
-    <p id="location">
-        Barrio Dominicano
+    <p>
+        Lugar:
+        <strong id="location">Barrio Los Almendros</strong>
     </p>
 
-    <br>
+    <p>
+        Actividad:
+        <span id="activity">Explorando el barrio.</span>
+    </p>
 
-    <h2>Actividad</h2>
-
-    <p id="activity">
-        Caminando por el barrio.
+    <p>
+        Estado:
+        <span id="status">Libre</span>
     </p>
 
 </div>
 
-<div id="controls">
+<div id="help">
 
     <span class="key">W</span>
     <span class="key">A</span>
@@ -371,7 +327,7 @@ button:hover {
     <span class="key">D</span>
     mover
 
-    <br>
+    &nbsp;
 
     <span class="key">E</span>
     interactuar
@@ -381,339 +337,604 @@ button:hover {
     <span class="key">B</span>
     bailar
 
-    <br>
+    &nbsp;
 
     <span class="key">F</span>
     trabajar
 
+    &nbsp;
+
+    <span class="key">H</span>
+    casa
+
+    &nbsp;
+
+    <span class="key">R</span>
+    descansar
+
 </div>
 
-<div id="notification"></div>
+<div id="notification">
+    <span id="toastIcon">🇩🇴</span>
+    <span id="notificationText"></span>
+</div>
 
-<div id="interaction">
+<div id="dialog">
 
-    <h2 id="interactionTitle">
-        Dominican City
-    </h2>
+    <h2 id="dialogTitle">Dominican City</h2>
 
-    <p id="interactionText">
-        ...
-    </p>
+    <p id="dialogText"></p>
 
-    <button onclick="closeInteraction()">
-        Cerrar
+    <button onclick="closeDialog()">
+        Continuar
     </button>
 
 </div>
 
-
 <script>
 
-/* =========================================================
-   CONFIGURACIÓN
-========================================================= */
+/* ============================================================
+   DOMINICAN CITY — VERSIÓN 2
+   Mundo 2D
+   ============================================================ */
 
-const GAME_WIDTH = 1600;
-const GAME_HEIGHT = 1000;
-
-const canvas = document.createElement("canvas");
-
-canvas.width = GAME_WIDTH;
-canvas.height = GAME_HEIGHT;
-
-document.getElementById("game").appendChild(canvas);
-
+const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
+
+let W = window.innerWidth;
+let H = window.innerHeight;
+
+canvas.width = W;
+canvas.height = H;
 
 ctx.imageSmoothingEnabled = false;
 
+window.addEventListener("resize", () => {
+    W = window.innerWidth;
+    H = window.innerHeight;
 
-/* =========================================================
-   ESTADO DEL JUEGO
-========================================================= */
+    canvas.width = W;
+    canvas.height = H;
 
-const game = {
+    ctx.imageSmoothingEnabled = false;
+});
 
-    year: 1965,
 
-    time: 8,
+/* ============================================================
+   MUNDO
+   ============================================================ */
 
-    player: {
-
-        x: 800,
-        y: 520,
-
-        speed: 3,
-
-        health: 100,
-        energy: 100,
-        hunger: 100,
-
-        money: 25,
-
-        job: "Desempleado",
-
-        dancing: false
-    },
-
-    camera: {
-
-        x: 0,
-        y: 0
-    },
-
-    keys: {},
-
-    npcs: [],
-
-    vehicles: [],
-
-    buildings: [],
-
-    particles: [],
-
-    location: "Barrio Dominicano"
-
+const WORLD = {
+    width: 3600,
+    height: 2400
 };
 
 
-/* =========================================================
+/* ============================================================
+   JUGADOR
+   ============================================================ */
+
+const player = {
+
+    x: 850,
+    y: 720,
+
+    speed: 3.2,
+
+    name: "José",
+
+    health: 100,
+    energy: 100,
+    hunger: 100,
+
+    money: 25,
+
+    job: "Desempleado",
+
+    dancing: false,
+
+    sleeping: false,
+
+    direction: "down"
+};
+
+
+/* ============================================================
+   FAMILIA
+   ============================================================ */
+
+const family = {
+
+    mother: {
+        name: "Doña Carmen",
+        relation: "Madre",
+        mood: 80
+    },
+
+    father: {
+        name: "Don Rafael",
+        relation: "Padre",
+        mood: 75
+    },
+
+    sister: {
+        name: "Ana",
+        relation: "Hermana",
+        mood: 85
+    }
+};
+
+
+/* ============================================================
+   TIEMPO
+   ============================================================ */
+
+const worldTime = {
+
+    year: 1965,
+
+    hour: 8,
+
+    minute: 0,
+
+    speed: .018
+};
+
+
+/* ============================================================
+   CÁMARA
+   ============================================================ */
+
+const camera = {
+    x: 0,
+    y: 0
+};
+
+
+/* ============================================================
    TECLADO
-========================================================= */
+   ============================================================ */
 
-window.addEventListener("keydown", e => {
+const keys = {};
 
-    game.keys[e.key.toLowerCase()] = true;
+window.addEventListener("keydown", event => {
 
-    if (e.key.toLowerCase() === "e") {
+    const key = event.key.toLowerCase();
 
+    keys[key] = true;
+
+    if (key === "e") {
         interact();
     }
 
-    if (e.key.toLowerCase() === "b") {
-
-        toggleDance();
+    if (key === "b") {
+        dance();
     }
 
-    if (e.key.toLowerCase() === "f") {
-
+    if (key === "f") {
         work();
     }
+
+    if (key === "h") {
+        goHome();
+    }
+
+    if (key === "r") {
+        rest();
+    }
+});
+
+window.addEventListener("keyup", event => {
+
+    keys[event.key.toLowerCase()] = false;
+
 });
 
 
-window.addEventListener("keyup", e => {
+/* ============================================================
+   EDIFICIOS
+   ============================================================ */
 
-    game.keys[e.key.toLowerCase()] = false;
+const buildings = [
 
-});
+    {
+        id: "home",
+        name: "Casa Familiar",
+        type: "house",
+        x: 400,
+        y: 420,
+        width: 320,
+        height: 230,
+        color: "#d99b5e"
+    },
+
+    {
+        id: "colmado",
+        name: "Colmado Don Pepe",
+        type: "shop",
+        x: 1000,
+        y: 300,
+        width: 260,
+        height: 190,
+        color: "#d4a72c"
+    },
+
+    {
+        id: "barber",
+        name: "Barbería El Barrio",
+        type: "barber",
+        x: 1450,
+        y: 330,
+        width: 260,
+        height: 190,
+        color: "#8d5524"
+    },
+
+    {
+        id: "school",
+        name: "Escuela Primaria",
+        type: "school",
+        x: 2050,
+        y: 320,
+        width: 330,
+        height: 220,
+        color: "#d66b4d"
+    },
+
+    {
+        id: "club",
+        name: "Club Social",
+        type: "club",
+        x: 2700,
+        y: 400,
+        width: 330,
+        height: 220,
+        color: "#8257a6"
+    },
+
+    {
+        id: "market",
+        name: "Supermercado",
+        type: "market",
+        x: 1450,
+        y: 1150,
+        width: 340,
+        height: 230,
+        color: "#4f86a6"
+    },
+
+    {
+        id: "bus",
+        name: "Parada de Conchos",
+        type: "bus",
+        x: 2250,
+        y: 1200,
+        width: 280,
+        height: 150,
+        color: "#555"
+    }
+];
 
 
-/* =========================================================
-   MAPA
-========================================================= */
+/* ============================================================
+   NPCS
+   ============================================================ */
 
-function createBuildings() {
+const npcs = [
 
-    game.buildings = [
+    {
+        name: "Doña Carmen",
+        role: "Madre",
+        x: 540,
+        y: 540,
+        color: "#b56576",
+        home: true,
+        speed: .3
+    },
 
-        {
-            x: 100,
-            y: 100,
-            w: 220,
-            h: 140,
-            name: "Colmado Don Pepe",
-            color: "#d9a441"
-        },
+    {
+        name: "Don Rafael",
+        role: "Padre",
+        x: 640,
+        y: 560,
+        color: "#355070",
+        home: true,
+        speed: .35
+    },
 
-        {
-            x: 420,
-            y: 90,
-            w: 260,
-            h: 160,
-            name: "Barbería",
-            color: "#8d5524"
-        },
+    {
+        name: "Ana",
+        role: "Hermana",
+        x: 580,
+        y: 600,
+        color: "#6a994e",
+        home: true,
+        speed: .45
+    },
 
-        {
-            x: 850,
-            y: 90,
-            w: 300,
-            h: 160,
-            name: "Supermercado",
-            color: "#457b9d"
-        },
+    {
+        name: "Don Pepe",
+        role: "Comerciante",
+        x: 1120,
+        y: 500,
+        color: "#9c6644",
+        speed: .35
+    },
 
-        {
-            x: 1200,
-            y: 110,
-            w: 260,
-            h: 170,
-            name: "Escuela",
-            color: "#e76f51"
-        },
+    {
+        name: "Ramón",
+        role: "Barbero",
+        x: 1560,
+        y: 520,
+        color: "#4361ee",
+        speed: .35
+    },
 
-        {
-            x: 100,
-            y: 700,
-            w: 280,
-            h: 160,
-            name: "Casa Familiar",
-            color: "#6a994e"
-        },
+    {
+        name: "María",
+        role: "Maestra",
+        x: 2200,
+        y: 550,
+        color: "#f4a261",
+        speed: .3
+    },
 
-        {
-            x: 500,
-            y: 720,
-            w: 280,
-            h: 150,
-            name: "Club Social",
-            color: "#9b5de5"
-        },
+    {
+        name: "Pedro",
+        role: "Músico",
+        x: 2800,
+        y: 650,
+        color: "#2a9d8f",
+        speed: .5
+    },
 
-        {
-            x: 1000,
-            y: 700,
-            w: 320,
-            h: 170,
-            name: "Parque",
-            color: "#386641"
-        }
-    ];
+    {
+        name: "Juan",
+        role: "Taxista",
+        x: 2200,
+        y: 1100,
+        color: "#e63946",
+        speed: .4
+    },
 
+    {
+        name: "Miguel",
+        role: "Estudiante",
+        x: 1950,
+        y: 800,
+        color: "#457b9d",
+        speed: .55
+    },
+
+    {
+        name: "Rosa",
+        role: "Cantante",
+        x: 2900,
+        y: 580,
+        color: "#e76f51",
+        speed: .4
+    }
+];
+
+
+/* ============================================================
+   VEHÍCULOS
+   ============================================================ */
+
+const vehicles = [
+
+    {
+        type: "concho",
+        x: -300,
+        y: 900,
+        speed: 1.2,
+        color: "#f1c40f"
+    },
+
+    {
+        type: "concho",
+        x: 900,
+        y: 900,
+        speed: 1.1,
+        color: "#ffffff"
+    },
+
+    {
+        type: "carro publico",
+        x: 1800,
+        y: 900,
+        speed: 1.35,
+        color: "#d9d9d9"
+    },
+
+    {
+        type: "taxi",
+        x: 2800,
+        y: 900,
+        speed: 1.5,
+        color: "#e9c46a"
+    }
+];
+
+
+/* ============================================================
+   CALLES
+   ============================================================ */
+
+const roads = [
+
+    {
+        x: 0,
+        y: 820,
+        width: WORLD.width,
+        height: 170
+    },
+
+    {
+        x: 820,
+        y: 0,
+        width: 180,
+        height: WORLD.height
+    },
+
+    {
+        x: 1800,
+        y: 0,
+        width: 160,
+        height: WORLD.height
+    },
+
+    {
+        x: 0,
+        y: 1450,
+        width: WORLD.width,
+        height: 160
+    }
+];
+
+
+/* ============================================================
+   DECORACIÓN
+   ============================================================ */
+
+const trees = [];
+
+for (let i = 0; i < 90; i++) {
+
+    trees.push({
+
+        x: 80 + Math.random() * (WORLD.width - 160),
+
+        y: 80 + Math.random() * (WORLD.height - 160),
+
+        size: 18 + Math.random() * 20
+    });
 }
 
 
-/* =========================================================
-   NPC
-========================================================= */
+/* ============================================================
+   FUNCIONES DE TIEMPO
+   ============================================================ */
 
-function createNPC(x, y, name, role, color) {
+function updateTime() {
 
-    return {
+    worldTime.minute += worldTime.speed;
 
-        x,
-        y,
+    if (worldTime.minute >= 60) {
 
-        name,
-        role,
+        worldTime.minute = 0;
 
-        color,
+        worldTime.hour++;
+    }
 
-        speed: .5,
+    if (worldTime.hour >= 24) {
 
-        direction: Math.random() * Math.PI * 2,
+        worldTime.hour = 0;
 
-        talking: false
-    };
-
+        nextDay();
+    }
 }
 
 
-function createNPCs() {
+function nextDay() {
 
-    game.npcs.push(
-        createNPC(700, 500, "Don Ramón", "Barbero", "#c49a6c"),
-        createNPC(900, 500, "José", "Taxista", "#e63946"),
-        createNPC(600, 400, "María", "Maestra", "#f4a261"),
-        createNPC(1100, 500, "Pedro", "Músico", "#457b9d"),
-        createNPC(500, 600, "Ana", "Estudiante", "#6a994e"),
-        createNPC(1000, 600, "Juan", "Trabajador", "#8d5524")
+    player.energy = 100;
+
+    player.hunger = 100;
+
+    family.mother.mood = Math.min(
+        100,
+        family.mother.mood + 10
     );
 
+    family.father.mood = Math.min(
+        100,
+        family.father.mood + 10
+    );
+
+    family.sister.mood = Math.min(
+        100,
+        family.sister.mood + 10
+    );
 }
 
 
-/* =========================================================
-   VEHÍCULOS
-========================================================= */
-
-function createVehicles() {
-
-    game.vehicles.push({
-
-        x: 300,
-
-        y: 500,
-
-        type: "concho",
-
-        color: "#f1c40f",
-
-        speed: 1.2
-    });
-
-    game.vehicles.push({
-
-        x: 1200,
-
-        y: 550,
-
-        type: "carro público",
-
-        color: "#ffffff",
-
-        speed: 1
-    });
-
-}
-
-
-/* =========================================================
+/* ============================================================
    MOVIMIENTO
-========================================================= */
+   ============================================================ */
 
 function updatePlayer() {
 
-    const p = game.player;
+    if (player.sleeping) {
+        return;
+    }
 
     let dx = 0;
     let dy = 0;
 
-    if (game.keys["w"]) dy -= 1;
-    if (game.keys["s"]) dy += 1;
-    if (game.keys["a"]) dx -= 1;
-    if (game.keys["d"]) dx += 1;
+    if (keys["w"]) {
+        dy -= 1;
+        player.direction = "up";
+    }
+
+    if (keys["s"]) {
+        dy += 1;
+        player.direction = "down";
+    }
+
+    if (keys["a"]) {
+        dx -= 1;
+        player.direction = "left";
+    }
+
+    if (keys["d"]) {
+        dx += 1;
+        player.direction = "right";
+    }
 
     if (dx !== 0 || dy !== 0) {
 
-        const length = Math.sqrt(dx * dx + dy * dy);
+        const length =
+            Math.sqrt(dx * dx + dy * dy);
 
         dx /= length;
         dy /= length;
 
-        p.x += dx * p.speed;
-        p.y += dy * p.speed;
+        player.x += dx * player.speed;
+        player.y += dy * player.speed;
 
-        p.energy -= .015;
-        p.hunger -= .008;
+        player.energy -= .012;
+        player.hunger -= .007;
     }
 
-    p.x = Math.max(30, Math.min(GAME_WIDTH - 30, p.x));
-    p.y = Math.max(30, Math.min(GAME_HEIGHT - 30, p.y));
+    player.x = Math.max(
+        30,
+        Math.min(
+            WORLD.width - 30,
+            player.x
+        )
+    );
 
+    player.y = Math.max(
+        30,
+        Math.min(
+            WORLD.height - 30,
+            player.y
+        )
+    );
 }
 
 
-/* =========================================================
-   NPCS
-========================================================= */
+/* ============================================================
+   NPC
+   ============================================================ */
 
 function updateNPCs() {
 
-    for (const npc of game.npcs) {
+    for (const npc of npcs) {
 
-        npc.x += Math.cos(npc.direction) * npc.speed;
-        npc.y += Math.sin(npc.direction) * npc.speed;
-
-        if (
-            npc.x < 30 ||
-            npc.x > GAME_WIDTH - 30 ||
-            npc.y < 30 ||
-            npc.y > GAME_HEIGHT - 30
-        ) {
-
-            npc.direction += Math.PI;
+        if (npc.home) {
+            continue;
         }
 
         if (Math.random() < .01) {
@@ -721,305 +942,552 @@ function updateNPCs() {
             npc.direction =
                 Math.random() * Math.PI * 2;
         }
-    }
 
+        if (!npc.direction) {
+
+            npc.direction =
+                Math.random() * Math.PI * 2;
+        }
+
+        npc.x +=
+            Math.cos(npc.direction) *
+            npc.speed;
+
+        npc.y +=
+            Math.sin(npc.direction) *
+            npc.speed;
+
+        if (
+            npc.x < 100 ||
+            npc.x > WORLD.width - 100
+        ) {
+
+            npc.direction += Math.PI;
+        }
+
+        if (
+            npc.y < 100 ||
+            npc.y > WORLD.height - 100
+        ) {
+
+            npc.direction += Math.PI;
+        }
+    }
 }
 
 
-/* =========================================================
+/* ============================================================
    VEHÍCULOS
-========================================================= */
+   ============================================================ */
 
 function updateVehicles() {
 
-    for (const vehicle of game.vehicles) {
+    for (const vehicle of vehicles) {
 
         vehicle.x += vehicle.speed;
 
-        if (vehicle.x > GAME_WIDTH + 100) {
+        if (vehicle.x > WORLD.width + 150) {
 
-            vehicle.x = -100;
+            vehicle.x = -200;
         }
     }
-
 }
 
 
-/* =========================================================
+/* ============================================================
    CÁMARA
-========================================================= */
+   ============================================================ */
 
 function updateCamera() {
 
-    game.camera.x =
-        game.player.x -
-        canvas.width / 2;
+    camera.x =
+        player.x -
+        W / 2;
 
-    game.camera.y =
-        game.player.y -
-        canvas.height / 2;
+    camera.y =
+        player.y -
+        H / 2;
 
+    camera.x = Math.max(
+        0,
+        Math.min(
+            WORLD.width - W,
+            camera.x
+        )
+    );
+
+    camera.y = Math.max(
+        0,
+        Math.min(
+            WORLD.height - H,
+            camera.y
+        )
+    );
 }
 
 
-/* =========================================================
-   DIBUJAR MAPA
-========================================================= */
+/* ============================================================
+   DIBUJAR TERRENO
+   ============================================================ */
 
-function drawWorld() {
+function drawGround() {
 
-    ctx.fillStyle = "#6fa35b";
-
-    ctx.fillRect(
-        0,
-        0,
-        GAME_WIDTH,
-        GAME_HEIGHT
-    );
-
-    /* calles */
-
-    ctx.fillStyle = "#444";
+    ctx.fillStyle = "#6e9f58";
 
     ctx.fillRect(
         0,
-        430,
-        GAME_WIDTH,
-        150
-    );
-
-    ctx.fillRect(
-        760,
         0,
-        160,
-        GAME_HEIGHT
+        WORLD.width,
+        WORLD.height
     );
 
-    /* aceras */
+    /* zonas de tierra */
 
-    ctx.fillStyle = "#aaa";
+    ctx.fillStyle = "#789b58";
 
-    ctx.fillRect(
-        0,
-        430,
-        GAME_WIDTH,
-        12
-    );
+    for (let x = 0; x < WORLD.width; x += 100) {
 
-    ctx.fillRect(
-        0,
-        568,
-        GAME_WIDTH,
-        12
-    );
+        for (let y = 0; y < WORLD.height; y += 100) {
 
-    ctx.fillRect(
-        760,
-        0,
-        12,
-        GAME_HEIGHT
-    );
+            if ((x + y) % 300 === 0) {
 
-    ctx.fillRect(
-        908,
-        0,
-        12,
-        GAME_HEIGHT
-    );
-
-}
-
-
-/* =========================================================
-   EDIFICIOS
-========================================================= */
-
-function drawBuildings() {
-
-    for (const building of game.buildings) {
-
-        ctx.fillStyle = building.color;
-
-        ctx.fillRect(
-            building.x,
-            building.y,
-            building.w,
-            building.h
-        );
-
-        ctx.fillStyle = "#eee";
-
-        ctx.fillRect(
-            building.x + 20,
-            building.y + 35,
-            40,
-            40
-        );
-
-        ctx.fillRect(
-            building.x + building.w - 60,
-            building.y + 35,
-            40,
-            40
-        );
-
-        ctx.fillStyle = "#222";
-
-        ctx.fillRect(
-            building.x + building.w / 2 - 20,
-            building.y + building.h - 60,
-            40,
-            60
-        );
-
-        ctx.fillStyle = "#fff";
-
-        ctx.font = "16px Arial";
-
-        ctx.fillText(
-            building.name,
-            building.x + 15,
-            building.y - 10
-        );
+                ctx.fillRect(
+                    x,
+                    y,
+                    40,
+                    40
+                );
+            }
+        }
     }
-
 }
 
 
-/* =========================================================
-   VEHÍCULOS
-========================================================= */
+/* ============================================================
+   DIBUJAR CALLES
+   ============================================================ */
 
-function drawVehicles() {
+function drawRoads() {
 
-    for (const vehicle of game.vehicles) {
+    for (const road of roads) {
 
-        ctx.fillStyle = vehicle.color;
-
-        ctx.fillRect(
-            vehicle.x,
-            vehicle.y,
-            80,
-            35
-        );
-
-        ctx.fillStyle = "#111";
+        ctx.fillStyle = "#454545";
 
         ctx.fillRect(
-            vehicle.x + 10,
-            vehicle.y + 30,
-            16,
-            16
+            road.x,
+            road.y,
+            road.width,
+            road.height
         );
 
-        ctx.fillRect(
-            vehicle.x + 55,
-            vehicle.y + 30,
-            16,
-            16
-        );
+        ctx.strokeStyle =
+            "#e8c547";
 
-        ctx.fillStyle = "#111";
+        ctx.lineWidth = 4;
 
-        ctx.fillRect(
-            vehicle.x + 20,
-            vehicle.y + 5,
-            40,
-            15
-        );
+        ctx.setLineDash([
+            35,
+            25
+        ]);
+
+        if (road.width > road.height) {
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                road.x,
+                road.y + road.height / 2
+            );
+
+            ctx.lineTo(
+                road.x + road.width,
+                road.y + road.height / 2
+            );
+
+            ctx.stroke();
+
+        } else {
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                road.x + road.width / 2,
+                road.y
+            );
+
+            ctx.lineTo(
+                road.x + road.width / 2,
+                road.y + road.height
+            );
+
+            ctx.stroke();
+        }
+
+        ctx.setLineDash([]);
     }
-
 }
 
 
-/* =========================================================
-   NPC
-========================================================= */
+/* ============================================================
+   ÁRBOLES
+   ============================================================ */
 
-function drawNPCs() {
+function drawTrees() {
 
-    for (const npc of game.npcs) {
+    for (const tree of trees) {
 
-        ctx.fillStyle = npc.color;
+        ctx.fillStyle = "#704214";
+
+        ctx.fillRect(
+            tree.x - 4,
+            tree.y,
+            8,
+            tree.size
+        );
+
+        ctx.fillStyle = "#28613a";
 
         ctx.beginPath();
 
         ctx.arc(
-            npc.x,
-            npc.y - 18,
-            10,
+            tree.x,
+            tree.y,
+            tree.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+    }
+}
+
+
+/* ============================================================
+   EDIFICIOS
+   ============================================================ */
+
+function drawBuildings() {
+
+    for (const b of buildings) {
+
+        /* sombra */
+
+        ctx.fillStyle =
+            "rgba(0,0,0,.25)";
+
+        ctx.fillRect(
+            b.x + 10,
+            b.y + 12,
+            b.width,
+            b.height
+        );
+
+        /* edificio */
+
+        ctx.fillStyle =
+            b.color;
+
+        ctx.fillRect(
+            b.x,
+            b.y,
+            b.width,
+            b.height
+        );
+
+        /* techo */
+
+        ctx.fillStyle =
+            "rgba(0,0,0,.22)";
+
+        ctx.fillRect(
+            b.x,
+            b.y,
+            b.width,
+            25
+        );
+
+        /* ventanas */
+
+        ctx.fillStyle =
+            "#dceef2";
+
+        for (
+            let x = b.x + 25;
+            x < b.x + b.width - 20;
+            x += 70
+        ) {
+
+            ctx.fillRect(
+                x,
+                b.y + 55,
+                35,
+                40
+            );
+        }
+
+        /* puerta */
+
+        ctx.fillStyle =
+            "#4a2c1d";
+
+        ctx.fillRect(
+            b.x + b.width / 2 - 22,
+            b.y + b.height - 70,
+            44,
+            70
+        );
+
+        /* nombre */
+
+        ctx.fillStyle =
+            "#ffffff";
+
+        ctx.font =
+            "bold 15px Arial";
+
+        ctx.textAlign =
+            "center";
+
+        ctx.fillText(
+            b.name,
+            b.x + b.width / 2,
+            b.y - 10
+        );
+
+        ctx.textAlign =
+            "left";
+    }
+}
+
+
+/* ============================================================
+   VEHÍCULOS
+   ============================================================ */
+
+function drawVehicles() {
+
+    for (const v of vehicles) {
+
+        const x = v.x;
+        const y = v.y;
+
+        ctx.fillStyle =
+            "rgba(0,0,0,.25)";
+
+        ctx.fillRect(
+            x + 4,
+            y + 22,
+            105,
+            15
+        );
+
+        ctx.fillStyle =
+            v.color;
+
+        ctx.fillRect(
+            x,
+            y,
+            110,
+            42
+        );
+
+        ctx.fillStyle =
+            "#20252a";
+
+        ctx.fillRect(
+            x + 20,
+            y - 20,
+            70,
+            28
+        );
+
+        ctx.fillStyle =
+            "#8fd3e8";
+
+        ctx.fillRect(
+            x + 28,
+            y - 15,
+            25,
+            17
+        );
+
+        ctx.fillRect(
+            x + 57,
+            y - 15,
+            25,
+            17
+        );
+
+        ctx.fillStyle =
+            "#111";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            x + 23,
+            y + 43,
+            9,
             0,
             Math.PI * 2
         );
 
         ctx.fill();
 
-        ctx.fillStyle = "#243b53";
+        ctx.beginPath();
 
-        ctx.fillRect(
-            npc.x - 9,
-            npc.y - 8,
-            18,
-            28
+        ctx.arc(
+            x + 87,
+            y + 43,
+            9,
+            0,
+            Math.PI * 2
         );
 
-        ctx.fillStyle = "#fff";
+        ctx.fill();
 
-        ctx.font = "11px Arial";
+        ctx.fillStyle =
+            "#fff";
 
-        ctx.textAlign = "center";
+        ctx.font =
+            "10px Arial";
+
+        ctx.fillText(
+            v.type,
+            x + 10,
+            y + 60
+        );
+    }
+}
+
+
+/* ============================================================
+   NPCS
+   ============================================================ */
+
+function drawNPCs() {
+
+    for (const npc of npcs) {
+
+        ctx.fillStyle =
+            npc.color;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            npc.x,
+            npc.y - 25,
+            12,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+        ctx.fillStyle =
+            "#243b53";
+
+        ctx.fillRect(
+            npc.x - 12,
+            npc.y - 13,
+            24,
+            35
+        );
+
+        ctx.fillStyle =
+            "#fff";
+
+        ctx.font =
+            "11px Arial";
+
+        ctx.textAlign =
+            "center";
 
         ctx.fillText(
             npc.name,
             npc.x,
-            npc.y - 32
+            npc.y - 43
         );
 
-        ctx.textAlign = "left";
-    }
+        ctx.fillStyle =
+            "#d0d0d0";
 
+        ctx.font =
+            "9px Arial";
+
+        ctx.fillText(
+            npc.role,
+            npc.x,
+            npc.y + 35
+        );
+
+        ctx.textAlign =
+            "left";
+    }
 }
 
 
-/* =========================================================
+/* ============================================================
    JUGADOR
-========================================================= */
+   ============================================================ */
 
 function drawPlayer() {
 
-    const p = game.player;
+    const bounce =
+        player.dancing
+        ? Math.sin(Date.now() / 90) * 5
+        : 0;
 
-    ctx.save();
+    const x = player.x;
+    const y = player.y + bounce;
 
-    if (p.dancing) {
+    /* sombra */
 
-        const bounce =
-            Math.sin(Date.now() / 100) * 5;
+    ctx.fillStyle =
+        "rgba(0,0,0,.3)";
 
-        ctx.translate(
-            p.x,
-            p.y + bounce
-        );
+    ctx.beginPath();
 
-    } else {
+    ctx.ellipse(
+        x,
+        y + 25,
+        17,
+        7,
+        0,
+        0,
+        Math.PI * 2
+    );
 
-        ctx.translate(
-            p.x,
-            p.y
-        );
-    }
+    ctx.fill();
 
     /* cabeza */
 
-    ctx.fillStyle = "#a66a45";
+    ctx.fillStyle =
+        "#a86643";
 
     ctx.beginPath();
 
     ctx.arc(
+        x,
+        y - 30,
+        13,
         0,
-        -25,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+    /* pelo */
+
+    ctx.fillStyle =
+        "#21170f";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y - 37,
         12,
-        0,
+        Math.PI,
         Math.PI * 2
     );
 
@@ -1027,317 +1495,650 @@ function drawPlayer() {
 
     /* camisa */
 
-    ctx.fillStyle = "#e63946";
+    ctx.fillStyle =
+        "#d62828";
 
     ctx.fillRect(
-        -12,
-        -13,
-        24,
-        30
+        x - 14,
+        y - 17,
+        28,
+        35
+    );
+
+    /* brazos */
+
+    ctx.fillStyle =
+        "#a86643";
+
+    ctx.fillRect(
+        x - 22,
+        y - 12,
+        8,
+        24
+    );
+
+    ctx.fillRect(
+        x + 14,
+        y - 12,
+        8,
+        24
     );
 
     /* pantalón */
 
-    ctx.fillStyle = "#253237";
+    ctx.fillStyle =
+        "#253237";
 
     ctx.fillRect(
-        -11,
-        17,
-        9,
-        18
+        x - 13,
+        y + 18,
+        11,
+        27
     );
 
     ctx.fillRect(
-        2,
-        17,
-        9,
-        18
+        x + 2,
+        y + 18,
+        11,
+        27
     );
 
-    ctx.restore();
+    /* nombre */
 
+    ctx.fillStyle =
+        "#fff";
+
+    ctx.font =
+        "bold 11px Arial";
+
+    ctx.textAlign =
+        "center";
+
+    ctx.fillText(
+        player.name,
+        x,
+        y - 53
+    );
+
+    ctx.textAlign =
+        "left";
 }
 
 
-/* =========================================================
+/* ============================================================
+   SOMBRAS / ILUMINACIÓN
+   ============================================================ */
+
+function drawLighting() {
+
+    let darkness = 0;
+
+    const h = worldTime.hour;
+
+    if (h >= 19 || h < 6) {
+
+        darkness = .48;
+
+    } else if (h >= 17) {
+
+        darkness = .20;
+
+    } else if (h < 8) {
+
+        darkness = .15;
+    }
+
+    if (darkness > 0) {
+
+        ctx.fillStyle =
+            `rgba(8,20,55,${darkness})`;
+
+        ctx.fillRect(
+            camera.x,
+            camera.y,
+            W,
+            H
+        );
+    }
+}
+
+
+/* ============================================================
    INTERACCIÓN
-========================================================= */
+   ============================================================ */
 
-function getNearestBuilding() {
+function nearestNPC(maxDistance = 120) {
 
-    const p = game.player;
-
-    let nearest = null;
+    let closest = null;
     let distance = Infinity;
 
-    for (const building of game.buildings) {
-
-        const cx =
-            building.x +
-            building.w / 2;
-
-        const cy =
-            building.y +
-            building.h / 2;
+    for (const npc of npcs) {
 
         const d =
             Math.hypot(
-                p.x - cx,
-                p.y - cy
+                player.x - npc.x,
+                player.y - npc.y
             );
 
-        if (d < distance) {
+        if (
+            d < distance &&
+            d < maxDistance
+        ) {
 
+            closest = npc;
             distance = d;
-            nearest = building;
         }
     }
 
-    return {
-        building: nearest,
-        distance
-    };
+    return closest;
+}
+
+
+function nearestBuilding(maxDistance = 180) {
+
+    let closest = null;
+    let distance = Infinity;
+
+    for (const b of buildings) {
+
+        const cx =
+            b.x + b.width / 2;
+
+        const cy =
+            b.y + b.height / 2;
+
+        const d =
+            Math.hypot(
+                player.x - cx,
+                player.y - cy
+            );
+
+        if (
+            d < distance &&
+            d < maxDistance
+        ) {
+
+            closest = b;
+            distance = d;
+        }
+    }
+
+    return closest;
 }
 
 
 function interact() {
 
-    const result =
-        getNearestBuilding();
+    const npc =
+        nearestNPC();
 
-    if (!result.building) return;
+    if (npc) {
 
-    if (result.distance > 180) {
-
-        showNotification(
-            "Acércate más para interactuar."
-        );
+        talkToNPC(npc);
 
         return;
     }
 
     const building =
-        result.building;
+        nearestBuilding();
 
-    if (building.name.includes("Barbería")) {
+    if (!building) {
 
-        openInteraction(
-            "💈 Barbería",
-            "Puedes trabajar como barbero, cortarte el pelo o conversar con los vecinos."
-        );
-
-    }
-
-    else if (building.name.includes("Supermercado")) {
-
-        openInteraction(
-            "🛒 Supermercado",
-            "Aquí podrás trabajar como empacador, cajero o encargado."
-        );
-
-    }
-
-    else if (building.name.includes("Escuela")) {
-
-        openInteraction(
-            "🎓 Escuela",
-            "Puedes estudiar para mejorar tus habilidades."
-        );
-
-    }
-
-    else if (building.name.includes("Club")) {
-
-        openInteraction(
-            "💃 Club Social",
-            "Aquí podrás bailar bachata, merengue, salsa y compartir con tus amigos."
-        );
-
-    }
-
-    else if (building.name.includes("Casa")) {
-
-        openInteraction(
-            "🏠 Casa Familiar",
-            "Este es tu hogar. Aquí vivirás con tu familia."
-        );
-
-    }
-
-    else {
-
-        openInteraction(
-            building.name,
-            "Un lugar de la República Dominicana."
-        );
-    }
-
-}
-
-
-/* =========================================================
-   TRABAJO
-========================================================= */
-
-function work() {
-
-    const result =
-        getNearestBuilding();
-
-    if (
-        !result.building ||
-        result.distance > 180
-    ) {
-
-        showNotification(
-            "Acércate a un lugar de trabajo."
+        notify(
+            "No hay nada cerca con lo que puedas interactuar."
         );
 
         return;
     }
 
-    const name =
-        result.building.name;
+    switch (building.type) {
 
-    if (name.includes("Barbería")) {
+        case "house":
 
-        game.player.job =
-            "Barbero";
+            openDialog(
+                "🏠 Casa Familiar",
+                "Aquí vive tu familia. Puedes conversar con tu madre, tu padre y tu hermana, comer, descansar y recuperar energía."
+            );
 
-        game.player.money += 5;
+            break;
 
-        showNotification(
-            "💈 Trabajaste como barbero. +$5"
+        case "shop":
+
+            openDialog(
+                "🏪 Colmado Don Pepe",
+                "El colmado del barrio. Puedes comprar comida y conversar con los vecinos."
+            );
+
+            break;
+
+        case "barber":
+
+            openDialog(
+                "💈 Barbería El Barrio",
+                "Aquí puedes trabajar como barbero y aprender el oficio."
+            );
+
+            break;
+
+        case "school":
+
+            openDialog(
+                "🎓 Escuela Primaria",
+                "Puedes estudiar aquí para desarrollar habilidades y conseguir mejores trabajos."
+            );
+
+            break;
+
+        case "club":
+
+            openDialog(
+                "💃 Club Social",
+                "Lugar para compartir con amigos, escuchar música, bailar bachata, merengue y salsa."
+            );
+
+            break;
+
+        case "market":
+
+            openDialog(
+                "🛒 Supermercado",
+                "Aquí puedes buscar trabajo como empacador o realizar compras."
+            );
+
+            break;
+
+        case "bus":
+
+            openDialog(
+                "🚕 Parada de Conchos",
+                "Aquí podrás tomar un carro público para viajar por la ciudad."
+            );
+
+            break;
+    }
+}
+
+
+/* ============================================================
+   CONVERSACIONES
+   ============================================================ */
+
+function talkToNPC(npc) {
+
+    if (npc.name === "Doña Carmen") {
+
+        openDialog(
+            "Doña Carmen",
+            "Mijo, no te olvides de pasar por la casa. Tu familia siempre está pendiente de ti."
         );
 
+        family.mother.mood =
+            Math.min(
+                100,
+                family.mother.mood + 5
+            );
+
+        return;
     }
 
-    else if (name.includes("Supermercado")) {
+    if (npc.name === "Don Rafael") {
 
-        game.player.job =
+        openDialog(
+            "Don Rafael",
+            "Muchacho, trabaja y aprende un oficio. Así podrás sacar tu familia adelante."
+        );
+
+        family.father.mood =
+            Math.min(
+                100,
+                family.father.mood + 5
+            );
+
+        return;
+    }
+
+    if (npc.role === "Barbero") {
+
+        openDialog(
+            npc.name,
+            "Si quieres aprender el oficio de barbero, puedes ayudarme en la barbería."
+        );
+
+        return;
+    }
+
+    if (npc.role === "Taxista") {
+
+        openDialog(
+            npc.name,
+            "Los conchos mantienen a mucha gente moviéndose por la ciudad. Si quieres, puedes aprender a trabajar de taxista."
+        );
+
+        return;
+    }
+
+    if (npc.role === "Músico") {
+
+        openDialog(
+            npc.name,
+            "La música está viva esta noche. En el club hay gente bailando bachata y merengue."
+        );
+
+        return;
+    }
+
+    openDialog(
+        npc.name,
+        "Hola. Soy " +
+        npc.name +
+        ". Trabajo como " +
+        npc.role +
+        "."
+    );
+}
+
+
+/* ============================================================
+   TRABAJO
+   ============================================================ */
+
+function work() {
+
+    const building =
+        nearestBuilding(200);
+
+    if (!building) {
+
+        notify(
+            "Acércate a un lugar donde puedas trabajar."
+        );
+
+        return;
+    }
+
+    if (building.type === "barber") {
+
+        player.job =
+            "Ayudante de barbero";
+
+        player.money += 5;
+
+        player.energy -= 8;
+
+        notify(
+            "💈 Trabajaste en la barbería. +$5"
+        );
+
+        return;
+    }
+
+    if (building.type === "market") {
+
+        player.job =
             "Empacador";
 
-        game.player.money += 4;
+        player.money += 4;
 
-        showNotification(
+        player.energy -= 7;
+
+        notify(
             "🛒 Trabajaste como empacador. +$4"
         );
 
+        return;
     }
 
-    else {
+    if (building.type === "shop") {
 
-        showNotification(
-            "Aquí no puedes trabajar todavía."
+        player.job =
+            "Ayudante del colmado";
+
+        player.money += 4;
+
+        player.energy -= 6;
+
+        notify(
+            "🏪 Ayudaste en el colmado. +$4"
         );
+
+        return;
     }
 
+    if (building.type === "bus") {
+
+        player.job =
+            "Ayudante de concho";
+
+        player.money += 6;
+
+        player.energy -= 10;
+
+        notify(
+            "🚕 Trabajaste con un concho. +$6"
+        );
+
+        return;
+    }
+
+    notify(
+        "Aquí no puedes trabajar ahora."
+    );
 }
 
 
-/* =========================================================
+/* ============================================================
    BAILE
-========================================================= */
+   ============================================================ */
 
-function toggleDance() {
+function dance() {
 
-    game.player.dancing =
-        !game.player.dancing;
+    const building =
+        nearestBuilding(220);
 
-    if (game.player.dancing) {
+    if (
+        !building ||
+        building.type !== "club"
+    ) {
 
-        showNotification(
-            "💃 ¡Estás bailando bachata!"
+        notify(
+            "Busca el Club Social para bailar."
         );
 
-        game.player.energy -= 5;
+        return;
+    }
+
+    player.dancing =
+        !player.dancing;
+
+    if (player.dancing) {
+
+        player.energy -= 5;
+
+        notify(
+            "💃 ¡Bachata! Estás bailando."
+        );
+
+        document.getElementById(
+            "activity"
+        ).textContent =
+            "Bailando bachata.";
 
     } else {
 
-        showNotification(
+        notify(
             "Terminaste de bailar."
         );
+
+        document.getElementById(
+            "activity"
+        ).textContent =
+            "Descansando después del baile.";
+    }
+}
+
+
+/* ============================================================
+   CASA
+   ============================================================ */
+
+function goHome() {
+
+    const building =
+        buildings.find(
+            b => b.type === "house"
+        );
+
+    const distance =
+        Math.hypot(
+            player.x -
+            (building.x + building.width / 2),
+
+            player.y -
+            (building.y + building.height / 2)
+        );
+
+    if (distance > 250) {
+
+        notify(
+            "Tu casa está demasiado lejos."
+        );
+
+        return;
     }
 
+    openDialog(
+        "🏠 Tu familia",
+        "Tu madre, tu padre y tu hermana están en casa. Puedes descansar y compartir con ellos."
+    );
+
+    family.mother.mood =
+        Math.min(
+            100,
+            family.mother.mood + 8
+        );
+
+    family.father.mood =
+        Math.min(
+            100,
+            family.father.mood + 8
+        );
+
+    family.sister.mood =
+        Math.min(
+            100,
+            family.sister.mood + 8
+        );
 }
 
 
-/* =========================================================
-   UI
-========================================================= */
+/* ============================================================
+   DESCANSAR
+   ============================================================ */
 
-function updateUI() {
+function rest() {
 
-    const p = game.player;
+    const home =
+        buildings.find(
+            b => b.type === "house"
+        );
 
-    document.getElementById(
-        "healthText"
-    ).textContent =
-        Math.round(p.health);
+    const distance =
+        Math.hypot(
+            player.x -
+            (home.x + home.width / 2),
 
-    document.getElementById(
-        "energyText"
-    ).textContent =
-        Math.round(p.energy);
+            player.y -
+            (home.y + home.height / 2)
+        );
 
-    document.getElementById(
-        "hungerText"
-    ).textContent =
-        Math.round(p.hunger);
+    if (distance > 250) {
 
-    document.getElementById(
-        "healthBar"
-    ).style.width =
-        p.health + "%";
+        notify(
+            "Debes estar cerca de tu casa para descansar."
+        );
 
-    document.getElementById(
-        "energyBar"
-    ).style.width =
-        p.energy + "%";
+        return;
+    }
 
-    document.getElementById(
-        "hungerBar"
-    ).style.width =
-        p.hunger + "%";
+    player.sleeping = true;
 
-    document.getElementById(
-        "money"
-    ).textContent =
-        "$" + p.money;
+    player.energy = 100;
 
-    document.getElementById(
-        "job"
-    ).textContent =
-        p.job;
+    player.hunger -= 15;
 
-    document.getElementById(
-        "year"
-    ).textContent =
-        game.year;
+    worldTime.hour += 7;
 
+    if (worldTime.hour >= 24) {
+
+        worldTime.hour -= 24;
+
+        nextDay();
+    }
+
+    setTimeout(() => {
+
+        player.sleeping = false;
+
+        notify(
+            "😴 Has descansado. Buenos días."
+        );
+
+    }, 700);
 }
 
 
-/* =========================================================
+/* ============================================================
+   DIALOG
+   ============================================================ */
+
+function openDialog(title, text) {
+
+    document.getElementById(
+        "dialogTitle"
+    ).textContent = title;
+
+    document.getElementById(
+        "dialogText"
+    ).textContent = text;
+
+    document.getElementById(
+        "dialog"
+    ).classList.add("active");
+}
+
+
+function closeDialog() {
+
+    document.getElementById(
+        "dialog"
+    ).classList.remove("active");
+}
+
+
+/* ============================================================
    NOTIFICACIONES
-========================================================= */
+   ============================================================ */
 
-let notificationTimer;
+let notificationTimeout;
 
-function showNotification(text) {
+function notify(text) {
 
     const element =
         document.getElementById(
             "notification"
         );
 
-    element.textContent = text;
+    document.getElementById(
+        "notificationText"
+    ).textContent = text;
 
     element.classList.add("show");
 
-    clearTimeout(notificationTimer);
+    clearTimeout(
+        notificationTimeout
+    );
 
-    notificationTimer =
+    notificationTimeout =
         setTimeout(() => {
 
             element.classList.remove(
@@ -1348,66 +2149,192 @@ function showNotification(text) {
 }
 
 
-function openInteraction(title, text) {
+/* ============================================================
+   ESTADO
+   ============================================================ */
 
-    document.getElementById(
-        "interactionTitle"
-    ).textContent = title;
+function updateStats() {
 
-    document.getElementById(
-        "interactionText"
-    ).textContent = text;
+    player.health =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                player.health
+            )
+        );
 
-    document.getElementById(
-        "interaction"
-    ).classList.add("active");
+    player.energy =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                player.energy
+            )
+        );
+
+    player.hunger =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                player.hunger
+            )
+        );
+
+    if (player.hunger < 20) {
+
+        player.health -= .01;
+    }
+
+    if (player.energy < 10) {
+
+        player.health -= .005;
+    }
 }
 
 
-function closeInteraction() {
+/* ============================================================
+   UI
+   ============================================================ */
+
+function updateUI() {
+
+    const hour =
+        String(
+            Math.floor(
+                worldTime.hour
+            )
+        ).padStart(2, "0");
+
+    const minute =
+        String(
+            Math.floor(
+                worldTime.minute
+            )
+        ).padStart(2, "0");
 
     document.getElementById(
-        "interaction"
-    ).classList.remove("active");
+        "year"
+    ).textContent =
+        worldTime.year;
+
+    document.getElementById(
+        "clock"
+    ).textContent =
+        `${hour}:${minute}`;
+
+    document.getElementById(
+        "healthText"
+    ).textContent =
+        Math.round(
+            player.health
+        );
+
+    document.getElementById(
+        "energyText"
+    ).textContent =
+        Math.round(
+            player.energy
+        );
+
+    document.getElementById(
+        "hungerText"
+    ).textContent =
+        Math.round(
+            player.hunger
+        );
+
+    document.getElementById(
+        "healthBar"
+    ).style.width =
+        player.health + "%";
+
+    document.getElementById(
+        "energyBar"
+    ).style.width =
+        player.energy + "%";
+
+    document.getElementById(
+        "hungerBar"
+    ).style.width =
+        player.hunger + "%";
+
+    document.getElementById(
+        "money"
+    ).textContent =
+        "$" +
+        Math.floor(
+            player.money
+        );
+
+    document.getElementById(
+        "job"
+    ).textContent =
+        player.job;
+
+    const familyAverage =
+        (
+            family.mother.mood +
+            family.father.mood +
+            family.sister.mood
+        ) / 3;
+
+    let familyMood =
+        "Contenta";
+
+    if (familyAverage < 40) {
+
+        familyMood =
+            "Preocupada";
+
+    } else if (familyAverage < 65) {
+
+        familyMood =
+            "Normal";
+    }
+
+    document.getElementById(
+        "familyMood"
+    ).textContent =
+        familyMood;
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        player.sleeping
+        ? "Durmiendo"
+        : player.dancing
+            ? "Bailando"
+            : "Libre";
 }
 
 
-/* =========================================================
-   CICLO DEL JUEGO
-========================================================= */
-
-function update() {
-
-    updatePlayer();
-
-    updateNPCs();
-
-    updateVehicles();
-
-    updateCamera();
-
-    updateUI();
-
-}
-
+/* ============================================================
+   DIBUJAR
+   ============================================================ */
 
 function draw() {
 
     ctx.clearRect(
         0,
         0,
-        canvas.width,
-        canvas.height
+        W,
+        H
     );
 
     ctx.save();
 
     ctx.translate(
-        -game.camera.x,
-        -game.camera.y
+        -camera.x,
+        -camera.y
     );
 
-    drawWorld();
+    drawGround();
+
+    drawTrees();
+
+    drawRoads();
 
     drawBuildings();
 
@@ -1419,37 +2346,53 @@ function draw() {
 
     ctx.restore();
 
+    drawLighting();
 }
 
 
-function gameLoop() {
+/* ============================================================
+   GAME LOOP
+   ============================================================ */
+
+function update() {
+
+    updateTime();
+
+    updatePlayer();
+
+    updateNPCs();
+
+    updateVehicles();
+
+    updateCamera();
+
+    updateStats();
+
+    updateUI();
+}
+
+
+function loop() {
 
     update();
 
     draw();
 
     requestAnimationFrame(
-        gameLoop
+        loop
     );
-
 }
 
 
-/* =========================================================
+/* ============================================================
    INICIO
-========================================================= */
+   ============================================================ */
 
-createBuildings();
-
-createNPCs();
-
-createVehicles();
-
-showNotification(
-    "🇩🇴 Bienvenido a Dominican City"
+notify(
+    "🇩🇴 Bienvenido a Dominican City — 1965"
 );
 
-gameLoop();
+loop();
 
 </script>
 
